@@ -23,10 +23,17 @@ let currentSpace = "All activity";
 
 const pageContent = document.querySelector("#pageContent");
 const composer = document.querySelector("#composer");
+function currentMemberIdentity(){
+  const session=getSession(), profile=managedMembers?.find(member=>sameId(member.id,session?.user?.id));
+  const emailName=session?.user?.email?.split("@")[0]?.replace(/[._-]+/g," ");
+  const name=profile?.name||session?.user?.user_metadata?.name||emailName||"Member";
+  return {name,initials:initials(name),role:accessRole==="Owner"?"Owner":accessRole==="Moderator"?"Moderator":"Own Your Options member"};
+}
 
 function homePage() {
+  const member=currentMemberIdentity();
   return `
-    <div class="page-head"><div><span class="eyebrow">Welcome to Own Your Options</span><h1>Good morning, Alex.</h1><p>Keep creating confidence, income, freedom, and fulfillment.</p></div><button class="text-button" data-page="start">View your pathway →</button></div>
+    <div class="page-head"><div><span class="eyebrow">Welcome to Own Your Options</span><h1>Good morning, ${escapeHtml(member.name)}.</h1><p>Keep creating confidence, income, freedom, and fulfillment.</p></div><button class="text-button" data-page="start">View your pathway →</button></div>
     <div class="home-grid"><div>
       <section class="welcome card"><div class="welcome-copy"><span class="eyebrow">A message from April</span><h1>Own your <em>options.</em></h1><p>You have the power. You have the choices. You can create more options.</p></div><div class="play-wrap"><button class="play">▶</button><small>Watch April's welcome · 2:14</small></div></section>
       <section class="section"><div class="section-head"><h2>This week's challenge</h2><button class="text-button" data-page="challenges">View challenge →</button></div>
@@ -48,10 +55,11 @@ function postCard(post, idx) {
 }
 
 function communityPage() {
+  const member=currentMemberIdentity();
   const all = [...userPosts, ...defaultPosts].filter(p => currentSpace === "All activity" || p.space === currentSpace);
   return `<div class="page-head"><div><span class="eyebrow">The Own Your Options Collective</span><h1>Community</h1><p>Connect with people creating options, taking responsibility, and building freedom.</p></div></div>
   <div class="page-layout"><aside class="spaces card"><h3>Spaces</h3>${spaces.map(s=>`<button class="space-button ${s===currentSpace?"active":""}" data-space="${s}">${s}</button>`).join("")}</aside>
-  <section class="feed"><div class="quick-post card"><div class="avatar avatar-ap">AP</div><button id="quickPost">Share a win, question, or idea...</button></div>${all.length ? all.map(postCard).join("") : `<div class="empty card">No posts here yet. Start the conversation.</div>`}</section>
+  <section class="feed"><div class="quick-post card"><div class="avatar avatar-ap">${member.initials}</div><button id="quickPost">Share a win, question, or idea...</button></div>${all.length ? all.map(postCard).join("") : `<div class="empty card">No posts here yet. Start the conversation.</div>`}</section>
   <aside class="community-aside card"><div class="prompt-box card"><span>WEEKLY PROMPT</span><p>What is one thing you know now that you wish you knew a year ago?</p></div><h3 style="margin-top:18px">Online now</h3><div class="online-list">${[["April","A","avatar-april"],["Samantha Lee","SL","avatar-sam"],["Jay Williams","JW","avatar-jay"],["Nina Foster","NF","avatar-nina"]].map(x=>`<div class="online"><div class="avatar ${x[2]}">${x[1]}</div>${x[0]}<i></i></div>`).join("")}</div></aside></div>`;
 }
 
@@ -255,7 +263,13 @@ function openAccount(){
   document.querySelector("#signInForm")?.addEventListener("submit",async event=>{event.preventDefault();try{await signIn(document.querySelector("#authEmail").value,document.querySelector("#authPassword").value);location.reload()}catch(e){document.querySelector("#authMessage").textContent=e.message}});
   document.querySelector("#createAccount")?.addEventListener("click",async()=>{try{const name=document.querySelector("#authName").value.trim();if(!name)throw new Error("Enter your name first.");await signUp(document.querySelector("#authEmail").value,document.querySelector("#authPassword").value,name);document.querySelector("#authMessage").textContent="Account created. Check your email, confirm it, then sign in."}catch(e){document.querySelector("#authMessage").textContent=e.message}});
 }
-document.querySelector("#accountButton").textContent=getSession()?initials(getSession().user.user_metadata?.name||getSession().user.email):"Sign in";
+const signedInIdentity=currentMemberIdentity();
+document.querySelector("#accountButton").textContent=getSession()?signedInIdentity.initials:"Sign in";
+document.querySelector("#sidebarAvatar").textContent=getSession()?signedInIdentity.initials:"YO";
+document.querySelector("#sidebarMemberName").textContent=getSession()?signedInIdentity.name:"Your account";
+document.querySelector("#sidebarMemberRole").textContent=getSession()?signedInIdentity.role:"Own Your Options member";
+document.querySelector("#commentTemplate .avatar").textContent=signedInIdentity.initials;
+document.querySelector("#commentTemplate strong").textContent=signedInIdentity.name;
 document.querySelector("#accountButton").addEventListener("click",openAccount);
 document.querySelector("#closeAccount").addEventListener("click",()=>accountDialog.close());
 document.querySelector("#openComposer").addEventListener("click",()=>{if(!getSession()&&location.protocol!=="file:")return openAccount();composer.showModal()});
@@ -264,5 +278,5 @@ document.querySelector(".moderator-nav").hidden=accessRole!=="Moderator";
 document.querySelector(".mobile-menu").addEventListener("click",()=>document.querySelector(".sidebar").classList.toggle("open"));
 document.querySelectorAll(".sidebar [data-page]").forEach(x=>x.addEventListener("click",e=>{e.preventDefault();render(x.dataset.page);document.querySelector(".sidebar").classList.remove("open")}));
 document.querySelector("#postImage").addEventListener("change", e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader();r.onload=()=>document.querySelector("#imagePreview").innerHTML=`<img src="${r.result}" alt="Preview">`;r.readAsDataURL(f)});
-document.querySelector("#postForm").addEventListener("submit",async e=>{e.preventDefault();const img=document.querySelector("#imagePreview img"),post={name:getSession()?.user?.user_metadata?.name||"Alex Parker",initials:"AP",avatar:"avatar-ap",space:document.querySelector("#postSpace").value,time:"Just now",text:document.querySelector("#postText").value,image:img?.src||"",likes:0,comments:[]};if(cloudReady&&getSession())try{const result=await createPost({user_id:getSession().user.id,space:post.space,body:post.text});post.id=result?.[0]?.id}catch(error){return showToast(error.message)}userPosts.unshift(post);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));e.target.reset();document.querySelector("#imagePreview").innerHTML="";composer.close();currentSpace="All activity";render("community")});
+document.querySelector("#postForm").addEventListener("submit",async e=>{e.preventDefault();const img=document.querySelector("#imagePreview img"),member=currentMemberIdentity(),post={name:member.name,initials:member.initials,avatar:"avatar-ap",space:document.querySelector("#postSpace").value,time:"Just now",text:document.querySelector("#postText").value,image:img?.src||"",likes:0,comments:[]};if(cloudReady&&getSession())try{const result=await createPost({user_id:getSession().user.id,space:post.space,body:post.text});post.id=result?.[0]?.id}catch(error){return showToast(error.message)}userPosts.unshift(post);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));e.target.reset();document.querySelector("#imagePreview").innerHTML="";composer.close();currentSpace="All activity";render("community")});
 render();
