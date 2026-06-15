@@ -4,8 +4,11 @@ const config = {
 };
 const sessionKey = "oyo-cloud-session";
 
-export const getSession = () => JSON.parse(localStorage.getItem(sessionKey) || "null");
-export const signOut = () => localStorage.removeItem(sessionKey);
+const getSession = () => {
+  try { return JSON.parse(localStorage.getItem(sessionKey) || "null"); }
+  catch { localStorage.removeItem(sessionKey); return null; }
+};
+const signOut = () => localStorage.removeItem(sessionKey);
 
 async function request(path, options = {}, authenticated = true) {
   const session = getSession();
@@ -25,19 +28,19 @@ async function request(path, options = {}, authenticated = true) {
   return text ? JSON.parse(text) : null;
 }
 
-export async function signIn(email, password) {
+async function signIn(email, password) {
   const session = await request("/auth/v1/token?grant_type=password", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password })
   }, false);
   localStorage.setItem(sessionKey, JSON.stringify(session));
   return session;
 }
-export async function signUp(email, password, name) {
+async function signUp(email, password, name) {
   return request("/auth/v1/signup", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, data: { name } })
   }, false);
 }
-export async function getHubAccessRole() {
+async function getHubAccessRole() {
   const session = getSession();
   if (!session?.user?.id) return "Guest";
   const owner = await request(`/rest/v1/oyo_app_owner?user_id=eq.${session.user.id}&select=user_id`);
@@ -47,25 +50,25 @@ export async function getHubAccessRole() {
   const moderator = await request(`/rest/v1/oyo_staff_roles?user_id=eq.${session.user.id}&status=eq.Active&select=role`);
   return moderator?.length ? "Moderator" : "Member";
 }
-export const fetchHubContent = () => request("/rest/v1/oyo_hub_content?select=*&order=sort_order.asc,created_at.desc");
-export const fetchProfiles = () => request("/rest/v1/oyo_member_profiles?select=*&order=display_name.asc");
-export const fetchMemberships = () => request("/rest/v1/oyo_memberships?select=*&order=joined_at.desc");
-export const fetchStaffRoles = () => request("/rest/v1/oyo_staff_roles?select=*");
-export const fetchProgress = () => request("/rest/v1/oyo_member_progress?select=*");
-export const fetchPosts = () => request("/rest/v1/oyo_community_posts?select=*&order=created_at.desc");
-export const fetchComments = () => request("/rest/v1/oyo_community_comments?select=*&order=created_at.asc");
+const fetchHubContent = () => request("/rest/v1/oyo_hub_content?select=*&order=created_at.desc");
+const fetchProfiles = () => request("/rest/v1/oyo_member_profiles?select=*&order=display_name.asc");
+const fetchMemberships = () => request("/rest/v1/oyo_memberships?select=*&order=joined_at.desc");
+const fetchStaffRoles = () => request("/rest/v1/oyo_staff_roles?select=*");
+const fetchProgress = () => request("/rest/v1/oyo_member_progress?select=*");
+const fetchPosts = () => request("/rest/v1/oyo_community_posts?select=*&order=created_at.desc");
+const fetchComments = () => request("/rest/v1/oyo_community_comments?select=*&order=created_at.asc");
 
-export const createPost = post => request("/rest/v1/oyo_community_posts", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"return=representation"}, body:JSON.stringify(post) });
-export const createCloudComment = comment => request("/rest/v1/oyo_community_comments", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"return=representation"}, body:JSON.stringify(comment) });
-export const removeCloudPost = id => request(`/rest/v1/oyo_community_posts?id=eq.${id}`, { method:"DELETE" });
-export const removeCloudComment = id => request(`/rest/v1/oyo_community_comments?id=eq.${id}`, { method:"DELETE" });
-export const upsertHubContent = item => request("/rest/v1/oyo_hub_content?on_conflict=id", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=representation"}, body:JSON.stringify(item) });
-export const removeHubContent = id => request(`/rest/v1/oyo_hub_content?id=eq.${id}`, { method:"DELETE" });
-export const upsertProgress = item => request("/rest/v1/oyo_member_progress?on_conflict=user_id,content_id", { method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify(item) });
-export const updateProfile = (userId, changes) => request(`/rest/v1/oyo_member_profiles?user_id=eq.${userId}`, { method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(changes) });
-export const updateMembership = (userId, changes) => request(`/rest/v1/oyo_memberships?user_id=eq.${userId}`, { method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(changes) });
-export const setMemberAccess = (userId,status,reason="") => request("/rest/v1/rpc/oyo_set_member_access", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_user_id:userId,new_status:status,reason}) });
-export const permanentlyDeleteMember = userId => request("/rest/v1/rpc/oyo_permanently_delete_member", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_user_id:userId}) });
-export const assignModerator = (userId, active=true) => active
+const createPost = post => request("/rest/v1/oyo_community_posts", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"return=representation"}, body:JSON.stringify(post) });
+const createCloudComment = comment => request("/rest/v1/oyo_community_comments", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"return=representation"}, body:JSON.stringify(comment) });
+const removeCloudPost = id => request(`/rest/v1/oyo_community_posts?id=eq.${id}`, { method:"DELETE" });
+const removeCloudComment = id => request(`/rest/v1/oyo_community_comments?id=eq.${id}`, { method:"DELETE" });
+const upsertHubContent = item => request("/rest/v1/oyo_hub_content?on_conflict=id", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=representation"}, body:JSON.stringify(item) });
+const removeHubContent = id => request(`/rest/v1/oyo_hub_content?id=eq.${id}`, { method:"DELETE" });
+const upsertProgress = item => request("/rest/v1/oyo_member_progress?on_conflict=user_id,content_id", { method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify(item) });
+const updateProfile = (userId, changes) => request(`/rest/v1/oyo_member_profiles?user_id=eq.${userId}`, { method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(changes) });
+const updateMembership = (userId, changes) => request(`/rest/v1/oyo_memberships?user_id=eq.${userId}`, { method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(changes) });
+const setMemberAccess = (userId,status,reason="") => request("/rest/v1/rpc/oyo_set_member_access", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_user_id:userId,new_status:status,reason}) });
+const permanentlyDeleteMember = userId => request("/rest/v1/rpc/oyo_permanently_delete_member", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_user_id:userId}) });
+const assignModerator = (userId, active=true) => active
   ? request("/rest/v1/oyo_staff_roles?on_conflict=user_id",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify({user_id:userId,role:"moderator",status:"Active",assigned_by:getSession().user.id})})
   : request(`/rest/v1/oyo_staff_roles?user_id=eq.${userId}`,{method:"DELETE"});

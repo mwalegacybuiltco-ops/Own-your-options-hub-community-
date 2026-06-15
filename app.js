@@ -1,7 +1,4 @@
-import { getSession, signIn, signUp, signOut, getHubAccessRole, fetchHubContent, fetchProfiles, fetchMemberships, fetchStaffRoles, fetchProgress, fetchPosts, fetchComments, createPost, createCloudComment, removeCloudPost, removeCloudComment, upsertHubContent, removeHubContent, upsertProgress, updateProfile, updateMembership, setMemberAccess, permanentlyDeleteMember, assignModerator } from "./cloud.js";
-
-let accessRole = location.protocol === "file:" ? "Owner" : "Guest";
-try { if(location.protocol !== "file:") accessRole = await getHubAccessRole(); } catch {}
+let accessRole = location.protocol === "file:" ? "Owner" : getSession() ? "Member" : "Guest";
 const spaces = ["All activity", "Introduce Yourself", "Wins & Celebrations", "Creating More Income Options", "Social Media & Content", "AI & Productivity", "Personal Growth", "Accountability Corner", "Ask April"];
 const categories = [
   ["Responsibility", "Own your choices and create momentum.", "6 lessons", "✓"],
@@ -139,8 +136,6 @@ async function syncCloudData(){
     saveMembers();saveContent();localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));cloudReady=true;
   } catch(error) { console.warn("Cloud sync unavailable:",error.message); }
 }
-await syncCloudData();
-
 function adminPage(){
   if(accessRole!=="Owner") return `<section class="pathway card"><span class="eyebrow">Private owner area</span><h1>April Admin is owner-only.</h1><p>This signed-in account does not have permission to access the private back office.</p><button class="primary" data-page="home">Return home</button></section>`;
   return `<div class="owner-lock"><span>◆</span> Owner-only back office · Only April's authenticated account can open this area</div><div class="page-head"><div><span class="eyebrow">Private owner back office</span><h1>April Admin</h1><p>Manage the Collective, its members, and their progress.</p></div><button class="primary" id="exportMembers">Export members</button></div>
@@ -263,20 +258,39 @@ function openAccount(){
   document.querySelector("#signInForm")?.addEventListener("submit",async event=>{event.preventDefault();try{await signIn(document.querySelector("#authEmail").value,document.querySelector("#authPassword").value);location.reload()}catch(e){document.querySelector("#authMessage").textContent=e.message}});
   document.querySelector("#createAccount")?.addEventListener("click",async()=>{try{const name=document.querySelector("#authName").value.trim();if(!name)throw new Error("Enter your name first.");await signUp(document.querySelector("#authEmail").value,document.querySelector("#authPassword").value,name);document.querySelector("#authMessage").textContent="Account created. Check your email, confirm it, then sign in."}catch(e){document.querySelector("#authMessage").textContent=e.message}});
 }
-const signedInIdentity=currentMemberIdentity();
-document.querySelector("#accountButton").textContent=getSession()?signedInIdentity.initials:"Sign in";
-document.querySelector("#sidebarAvatar").textContent=getSession()?signedInIdentity.initials:"YO";
-document.querySelector("#sidebarMemberName").textContent=getSession()?signedInIdentity.name:"Your account";
-document.querySelector("#sidebarMemberRole").textContent=getSession()?signedInIdentity.role:"Own Your Options member";
-document.querySelector("#commentTemplate .avatar").textContent=signedInIdentity.initials;
-document.querySelector("#commentTemplate strong").textContent=signedInIdentity.name;
+function updateIdentityUI(){
+  const identity=currentMemberIdentity(), session=getSession();
+  document.querySelector("#accountButton").textContent=session?identity.initials:"Sign in";
+  document.querySelector("#sidebarAvatar").textContent=session?identity.initials:"YO";
+  document.querySelector("#sidebarMemberName").textContent=session?identity.name:"Your account";
+  document.querySelector("#sidebarMemberRole").textContent=session?identity.role:"Own Your Options member";
+  document.querySelector("#commentTemplate .avatar").textContent=identity.initials;
+  document.querySelector("#commentTemplate strong").textContent=identity.name;
+  document.querySelector(".admin-nav").hidden=accessRole!=="Owner";
+  document.querySelector(".moderator-nav").hidden=accessRole!=="Moderator";
+}
+updateIdentityUI();
 document.querySelector("#accountButton").addEventListener("click",openAccount);
 document.querySelector("#closeAccount").addEventListener("click",()=>accountDialog.close());
 document.querySelector("#openComposer").addEventListener("click",()=>{if(!getSession()&&location.protocol!=="file:")return openAccount();composer.showModal()});
-document.querySelector(".admin-nav").hidden=accessRole!=="Owner";
-document.querySelector(".moderator-nav").hidden=accessRole!=="Moderator";
 document.querySelector(".mobile-menu").addEventListener("click",()=>document.querySelector(".sidebar").classList.toggle("open"));
-document.querySelectorAll(".sidebar [data-page]").forEach(x=>x.addEventListener("click",e=>{e.preventDefault();render(x.dataset.page);document.querySelector(".sidebar").classList.remove("open")}));
+document.querySelector(".sidebar").addEventListener("click",event=>{const button=event.target.closest("[data-page]");if(!button)return;event.preventDefault();render(button.dataset.page);document.querySelector(".sidebar").classList.remove("open")});
 document.querySelector("#postImage").addEventListener("change", e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader();r.onload=()=>document.querySelector("#imagePreview").innerHTML=`<img src="${r.result}" alt="Preview">`;r.readAsDataURL(f)});
 document.querySelector("#postForm").addEventListener("submit",async e=>{e.preventDefault();const img=document.querySelector("#imagePreview img"),member=currentMemberIdentity(),post={name:member.name,initials:member.initials,avatar:"avatar-ap",space:document.querySelector("#postSpace").value,time:"Just now",text:document.querySelector("#postText").value,image:img?.src||"",likes:0,comments:[]};if(cloudReady&&getSession())try{const result=await createPost({user_id:getSession().user.id,space:post.space,body:post.text});post.id=result?.[0]?.id}catch(error){return showToast(error.message)}userPosts.unshift(post);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));e.target.reset();document.querySelector("#imagePreview").innerHTML="";composer.close();currentSpace="All activity";render("community")});
 render();
+
+async function initializeCloud(){
+  if(location.protocol==="file:"||!getSession())return;
+  try{
+    accessRole=await getHubAccessRole();
+    updateIdentityUI();
+    render();
+    await syncCloudData();
+    updateIdentityUI();
+    render();
+  }catch(error){
+    console.error("Own Your Options cloud connection:",error);
+    showToast("The hub is available. Online updates will reconnect shortly.");
+  }
+}
+initializeCloud();
