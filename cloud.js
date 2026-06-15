@@ -72,3 +72,12 @@ const permanentlyDeleteMember = userId => request("/rest/v1/rpc/oyo_permanently_
 const assignModerator = (userId, active=true) => active
   ? request("/rest/v1/oyo_staff_roles?on_conflict=user_id",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify({user_id:userId,role:"moderator",status:"Active",assigned_by:getSession().user.id})})
   : request(`/rest/v1/oyo_staff_roles?user_id=eq.${userId}`,{method:"DELETE"});
+
+globalThis.OYOCloud = {
+  getSession, signOut, signIn, signUp, getHubAccessRole, fetchHubContent,
+  fetchProfiles, fetchMemberships, fetchStaffRoles, fetchProgress, fetchPosts,
+  fetchComments, createPost, createCloudComment, removeCloudPost,
+  removeCloudComment, upsertHubContent, removeHubContent, upsertProgress,
+  updateProfile, updateMembership, setMemberAccess, permanentlyDeleteMember,
+  assignModerator
+};

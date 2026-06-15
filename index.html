@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Italiana&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260615-0015">
+  <link rel="stylesheet" href="styles.css?v=20260615-0215">
 </head>
-<body>
+<body class="guest-view">
   <aside class="sidebar">
     <a class="brand" href="#" data-page="home">
       <span class="brand-mark"><b>O</b><i>Y</i><b>O</b></span>
@@ -19,6 +19,7 @@
 
     <nav class="main-nav" aria-label="Main navigation">
       <button class="nav-item active" data-page="home"><span>⌂</span> Home</button>
+      <button class="nav-item" data-page="apps"><span>◆</span> My Apps</button>
       <button class="nav-item" data-page="community"><span>◌</span> Community <b>4</b></button>
       <button class="nav-item" data-page="learn"><span>▣</span> Learn</button>
       <button class="nav-item" data-page="start"><span>↗</span> Start Here</button>
@@ -49,7 +50,7 @@
       <button class="mobile-menu" aria-label="Open menu">☰</button>
       <div class="search"><span>⌕</span><input placeholder="Search the collective..."><kbd>⌘ K</kbd></div>
       <div class="top-actions">
-        <small class="build-label">BUILD 0015</small>
+        <small class="build-label">BUILD 0215</small>
         <button class="icon-button" aria-label="Messages">◇<i></i></button>
         <button class="icon-button" aria-label="Notifications">♧<i></i></button>
         <button class="account-button" id="accountButton">Sign in</button>
@@ -57,7 +58,18 @@
       </div>
     </header>
 
-    <div id="pageContent"></div>
+    <div id="pageContent">
+      <section class="public-landing">
+        <div class="landing-copy">
+          <span class="eyebrow">Own Your Options Collective</span>
+          <h1>Create more options.<br><em>Live by choice.</em></h1>
+          <p>A supportive community, practical training, live coaching, challenges, and resources designed to help you build confidence, income, freedom, and fulfillment.</p>
+          <div class="landing-actions"><button class="primary">Member sign in</button><button class="landing-secondary">Join the Collective</button></div>
+          <div class="landing-points"><span>Community support</span><span>Practical learning</span><span>Weekly momentum</span></div>
+        </div>
+        <div class="landing-panel card"><span class="eyebrow">Inside the Collective</span><h2>Your next option starts here.</h2><p>The app is loading your secure member experience.</p></div>
+      </section>
+    </div>
   </main>
 
   <dialog id="composer">
@@ -100,7 +112,7 @@
     <div class="comment"><div class="avatar avatar-ap">YO</div><div><strong>Own Your Options Member</strong><p></p></div></div>
   </template>
 
-  <script src="cloud.js?v=20260615-0015"></script>
-  <script src="app.js?v=20260615-0015"></script>
+  <script src="cloud.js?v=20260615-0215"></script>
+  <script src="app.js?v=20260615-0215"></script>
 </body>
 </html>

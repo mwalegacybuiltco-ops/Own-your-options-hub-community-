@@ -1,3 +1,16 @@
+(function(){
+const offlineCloud = {
+  getSession:()=>null, signOut:()=>{}, signIn:async()=>{throw new Error("The online sign-in connection is not available yet.")},
+  signUp:async()=>{throw new Error("The online account connection is not available yet.")}, getHubAccessRole:async()=>"Guest",
+  fetchHubContent:async()=>[], fetchProfiles:async()=>[], fetchMemberships:async()=>[], fetchStaffRoles:async()=>[],
+  fetchProgress:async()=>[], fetchPosts:async()=>[], fetchComments:async()=>[], createPost:async()=>null,
+  createCloudComment:async()=>null, removeCloudPost:async()=>null, removeCloudComment:async()=>null,
+  upsertHubContent:async()=>null, removeHubContent:async()=>null, upsertProgress:async()=>null,
+  updateProfile:async()=>null, updateMembership:async()=>null, setMemberAccess:async()=>null,
+  permanentlyDeleteMember:async()=>null, assignModerator:async()=>null
+};
+const {getSession,signOut,signIn,signUp,getHubAccessRole,fetchHubContent,fetchProfiles,fetchMemberships,fetchStaffRoles,fetchProgress,fetchPosts,fetchComments,createPost,createCloudComment,removeCloudPost,removeCloudComment,upsertHubContent,removeHubContent,upsertProgress,updateProfile,updateMembership,setMemberAccess,permanentlyDeleteMember,assignModerator}=globalThis.OYOCloud||offlineCloud;
+const readStored=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||"null")||fallback}catch{return fallback}};
 let accessRole = location.protocol === "file:" ? "Owner" : getSession() ? "Member" : "Guest";
 const spaces = ["All activity", "Introduce Yourself", "Wins & Celebrations", "Creating More Income Options", "Social Media & Content", "AI & Productivity", "Personal Growth", "Accountability Corner", "Ask April"];
 const categories = [
@@ -15,8 +28,10 @@ const defaultPosts = [
   {name:"April", initials:"A", avatar:"avatar-april", space:"Ask April", time:"2 hrs ago", text:"Monday reminder: you do not need the whole plan. You need one honest next move. What is yours this week?", likes:31, comments:[["Jay Williams","Mine is finally publishing the landing page."]]},
   {name:"Samantha Lee", initials:"SL", avatar:"avatar-sam", space:"AI & Productivity", time:"Yesterday", text:"I used the weekly planning prompt from the Resource Vault and saved at least an hour. Sharing the win because simple systems really do add up.", likes:24, comments:[]}
 ];
-let userPosts = JSON.parse(localStorage.getItem("oyo-community-posts") || "[]");
+let userPosts = readStored("oyo-community-posts",[]);
 let currentSpace = "All activity";
+let appLinks=readStored("oyo-app-links",{daily:"",coaching:""});
+const saveAppLinks=()=>localStorage.setItem("oyo-app-links",JSON.stringify(appLinks));
 
 const pageContent = document.querySelector("#pageContent");
 const composer = document.querySelector("#composer");
@@ -44,6 +59,10 @@ function homePage() {
       <section class="wins card"><div class="section-head"><h3>Member wins</h3><button class="text-button" data-page="community">See all</button></div><div class="win"><div class="avatar avatar-nina">NF</div><div><strong>Nina launched her first offer</strong><p>"I stopped waiting for perfect."</p><small>28 min ago · ♡ 18</small></div></div><div class="win"><div class="avatar avatar-jay">JW</div><div><strong>Jay booked a new client</strong><p>"The communication training worked."</p><small>Yesterday · ♡ 31</small></div></div></section>
       <section class="joined card"><div><strong>12 new members</strong><small>joined this week</small></div><div class="member-stack"><div class="avatar avatar-sam">SL</div><div class="avatar avatar-jay">JW</div><div class="avatar avatar-nina">NF</div></div></section>
     </aside></div>`;
+}
+
+function appsPage(){
+  return `<div class="page-head"><div><span class="eyebrow">Everything in one place</span><h1>My Apps</h1><p>Open your daily Own Your Options experience or enter the Coaching Hub.</p></div></div><div class="app-launch-grid"><article class="app-launch-card daily-app card"><span class="app-label">Daily experience</span><div class="app-launch-icon">OYO</div><h2>Own Your Options App</h2><p>Your daily focus, philosophy library, assessment, action plan, and story library.</p><button class="primary app-launch-button" data-app-link="daily">Open Own Your Options App</button></article><article class="app-launch-card coaching-app card"><span class="app-label">Coaching members</span><div class="app-launch-icon">COACH</div><h2>Coaching Hub</h2><p>Open your separate coaching app for calls, replays, worksheets, action plans, and accountability.</p><button class="primary app-launch-button" data-app-link="coaching">Open Coaching Hub</button></article></div>${accessRole==="Owner"?`<div class="app-owner-note card"><strong>April:</strong> Add or change these app links inside <button data-page="admin" data-open-app-links="true">April Admin → App Links</button>.</div>`:""}`;
 }
 
 function postCard(post, idx) {
@@ -74,7 +93,7 @@ function eventsPage() {
 }
 
 function coachingPage() {
-  return `<div class="page-head"><div><span class="eyebrow">Guidance + accountability</span><h1>Coaching Hub</h1><p>Deeper support for turning insight into meaningful action.</p></div></div><section class="locked-hero card"><div><span class="eyebrow">Own Your Options Coaching</span><h1 style="margin-top:9px">You don't do this alone.</h1><p>Join April and a focused group of members for coaching, accountability, practical plans, and honest momentum.</p><button class="primary">Explore coaching membership</button></div><div class="coaching-portrait"></div></section><div class="benefits">${["Weekly group coaching calls","Replays + action plans","Accountability check-ins","Worksheets that create clarity","Monthly office hours","A focused coaching community"].map((x,i)=>`<article class="benefit card"><span class="eyebrow">0${i+1}</span><h3 style="margin-top:8px">${x}</h3><p>Practical support designed to help you keep moving.</p></article>`).join("")}</div>`;
+  return `<div class="page-head"><div><span class="eyebrow">Guidance + accountability</span><h1>Coaching Hub</h1><p>Deeper support for turning insight into meaningful action.</p></div><button class="primary app-launch-button" data-app-link="coaching">Open Coaching App</button></div><section class="locked-hero card"><div><span class="eyebrow">Own Your Options Coaching</span><h1 style="margin-top:9px">You don't do this alone.</h1><p>Join April and a focused group of members for coaching, accountability, practical plans, and honest momentum.</p><button class="primary app-launch-button" data-app-link="coaching">Enter the Coaching Hub</button></div><div class="coaching-portrait"></div></section><div class="benefits">${["Weekly group coaching calls","Replays + action plans","Accountability check-ins","Worksheets that create clarity","Monthly office hours","A focused coaching community"].map((x,i)=>`<article class="benefit card"><span class="eyebrow">0${i+1}</span><h3 style="margin-top:8px">${x}</h3><p>Practical support designed to help you keep moving.</p></article>`).join("")}</div>`;
 }
 
 function challengesPage() {
@@ -107,8 +126,8 @@ const starterContent=[
   {id:104,title:"7 Day Resourcefulness Challenge",area:"Challenges",type:"Challenge",status:"Published",description:"Use what you already have to create momentum."},
   {id:105,title:"Overcoming Overwhelm",area:"Coaching Hub",type:"Replay",status:"Draft",description:"Turn an overloaded mind into one clear decision."}
 ];
-let managedMembers=JSON.parse(localStorage.getItem("oyo-hub-members")||"null")||starterMembers;
-let managedContent=JSON.parse(localStorage.getItem("oyo-hub-content")||"null")||starterContent;
+let managedMembers=readStored("oyo-hub-members",starterMembers);
+let managedContent=readStored("oyo-hub-content",starterContent);
 managedMembers.forEach(member=>member.completions??={});
 managedMembers.forEach(member=>member.role??="Member");
 managedMembers.forEach(member=>{member.accessStatus??=member.status==="Paused"?"Suspended":"Active";member.internalNotes??="";member.statusReason??="";member.archivedAt??="";});
@@ -139,7 +158,7 @@ async function syncCloudData(){
 function adminPage(){
   if(accessRole!=="Owner") return `<section class="pathway card"><span class="eyebrow">Private owner area</span><h1>April Admin is owner-only.</h1><p>This signed-in account does not have permission to access the private back office.</p><button class="primary" data-page="home">Return home</button></section>`;
   return `<div class="owner-lock"><span>◆</span> Owner-only back office · Only April's authenticated account can open this area</div><div class="page-head"><div><span class="eyebrow">Private owner back office</span><h1>April Admin</h1><p>Manage the Collective, its members, and their progress.</p></div><button class="primary" id="exportMembers">Export members</button></div>
-  <div class="admin-tabs">${[["overview","Overview"],["content","Content"],["members","Members"],["progress","Progress"],["moderation","Community"],["roles","Team & Roles"],["housekeeping","Housekeeping"]].map(x=>`<button class="${adminTab===x[0]?"active":""}" data-admin-tab="${x[0]}">${x[1]}</button>`).join("")}</div><div id="adminPanel">${adminPanelMarkup()}</div>`;
+  <div class="admin-tabs">${[["overview","Overview"],["app-links","App Links"],["content","Content"],["members","Members"],["progress","Progress"],["moderation","Community"],["roles","Team & Roles"],["housekeeping","Housekeeping"]].map(x=>`<button class="${adminTab===x[0]?"active":""}" data-admin-tab="${x[0]}">${x[1]}</button>`).join("")}</div><div id="adminPanel">${adminPanelMarkup()}</div>`;
 }
 function adminPanelMarkup(){
   if(adminTab==="overview"){
@@ -147,6 +166,7 @@ function adminPanelMarkup(){
     return `<div class="admin-metrics">${[["Members",managedMembers.length,"Total member records"],["Active",active,"Able to access the hub"],["Average progress",avg+"%","Across all members"],["Published",managedContent.filter(x=>x.status==="Published").length,"Visible content items"]].map(x=>`<article class="metric-card card"><span class="eyebrow">${x[0]}</span><strong>${x[1]}</strong><p>${x[2]}</p></article>`).join("")}</div>
     <div class="admin-two"><section class="admin-box card"><h2>What you can manage</h2><div class="admin-checklist">${["Add, edit, publish, draft, or remove content","Control which members appear in the directory","Review each member's completion and last activity","Activate, pause, or remove member accounts","Assign moderators with limited permissions","Moderate posts shared in the community"].map(x=>`<p>✓ ${x}</p>`).join("")}</div></section><section class="admin-box card"><span class="eyebrow">Needs attention</span><h2>Member follow-up</h2>${managedMembers.filter(x=>x.progress<50).map(x=>`<div class="attention-row"><div class="avatar ${x.avatar}">${initials(x.name)}</div><div><strong>${x.name}</strong><small>${x.progress}% complete · ${x.lastActive}</small></div></div>`).join("")}</section></div>`;
   }
+  if(adminTab==="app-links") return `<div class="admin-two"><section class="admin-box card"><span class="eyebrow">Connected apps</span><h2>Add your app links</h2><p class="account-note">Paste the full website address for each app. These buttons will then open the correct app from the hub.</p><form class="admin-form" id="appLinksForm"><label>Own Your Options App link<input id="dailyAppLink" type="url" placeholder="https://..." value="${escapeHtml(appLinks.daily)}"></label><label>Coaching Hub app link<input id="coachingAppLink" type="url" placeholder="https://..." value="${escapeHtml(appLinks.coaching)}"></label><button class="primary">Save app links</button></form></section><section class="admin-box card"><span class="eyebrow">Member view</span><h2>What members will see</h2><div class="admin-checklist"><p>◆ Own Your Options App button</p><p>◆ Coaching Hub button</p><p>◆ A dedicated My Apps page</p><p>◆ Coaching app access from the Coaching Hub page</p></div></section></div>`;
   if(adminTab==="content") return `<div class="admin-two"><section class="admin-box card"><span class="eyebrow">Content editor</span><h2>Add something new</h2><form class="admin-form" id="adminContentForm"><label>Title<input id="adminContentTitle" required placeholder="Example: Creating income options"></label><div class="field-pair"><label>Appears in<select id="adminContentArea">${["Learn","Live Events","Coaching Hub","Challenges","Resource Vault"].map(x=>`<option>${x}</option>`).join("")}</select></label><label>Type<select id="adminContentType">${["Lesson","Video","PDF","Template","Live session","Replay","Challenge"].map(x=>`<option>${x}</option>`).join("")}</select></label></div><label>Description<textarea id="adminContentDescription" required placeholder="What members will learn or receive"></textarea></label><label>Status<select id="adminContentStatus"><option>Published</option><option>Draft</option></select></label><button class="primary">Save content</button></form></section><section class="admin-box card"><span class="eyebrow">Content library</span><h2>${managedContent.length} items</h2><div class="admin-list">${managedContent.map(x=>`<article class="admin-list-item"><div><small>${x.area} · ${x.type} · <b class="${x.status==="Published"?"success":"draft"}">${x.status}</b></small><strong>${escapeHtml(x.title)}</strong><p>${escapeHtml(x.description)}</p></div><div class="item-buttons"><button data-content-toggle="${x.id}">${x.status==="Published"?"Unpublish":"Publish"}</button><button class="danger" data-content-delete="${x.id}">Remove</button></div></article>`).join("")}</div></section></div>`;
   if(adminTab==="members") return `<div class="admin-two"><section class="admin-box card"><span class="eyebrow">Member onboarding</span><h2>How members join</h2><p class="account-note">New members choose <strong>Create a new member account</strong> from the sign-in screen. Their secure login, member record, and directory profile are created automatically.</p><div class="admin-checklist"><p>✓ Member confirms their email</p><p>✓ Database creates their profile</p><p>✓ You can then manage access and visibility</p><p>✓ Passwords remain private and secure</p></div><button class="primary wide" id="copyJoinLink">Copy member join link</button></section><section class="admin-box card"><span class="eyebrow">Active records</span><h2>${managedMembers.filter(x=>x.accessStatus!=="Archived").length} members</h2><div class="admin-list">${managedMembers.filter(x=>x.accessStatus!=="Archived").map(member=>memberAdminRow(member)).join("")}</div></section></div>`;
   if(adminTab==="progress") {
@@ -172,11 +192,12 @@ function moderatorPage(){
   return `<div class="page-head"><div><span class="eyebrow">Community-only access</span><h1>Moderator Tools</h1><p>Review community conversations without access to April Admin.</p></div></div><div class="moderator-banner card"><div><span class="eyebrow">Limited permissions</span><h2>Keep the Collective welcoming and useful</h2><p>This workspace contains community moderation only. Member records, private progress, content publishing, roles, and business settings remain owner-only.</p></div></div><div class="admin-two"><section class="admin-box card"><h2>Member posts</h2><div class="admin-list">${userPosts.length?userPosts.map((post,i)=>`<article class="admin-list-item"><div><small>${post.space}</small><strong>${post.name}</strong><p>${escapeHtml(post.text)}</p></div><button class="danger" data-post-delete="${i}">Remove</button></article>`).join(""):`<div class="empty">No member posts need review.</div>`}</div></section><section class="admin-box card"><h2>Member comments</h2><div class="admin-list">${comments.length?comments.map(comment=>`<article class="admin-list-item"><div><small>On: ${escapeHtml(comment.post.slice(0,45))}</small><strong>${escapeHtml(comment.author)}</strong><p>${escapeHtml(comment.body)}</p></div><button class="danger" data-comment-post="${comment.postIndex}" data-comment-delete="${comment.commentIndex}">Remove</button></article>`).join(""):`<div class="empty">No comments need review.</div>`}</div></section></div>`;
 }
 
-const pages = {home:homePage, community:communityPage, learn:learnPage, start:startPage, events:eventsPage, coaching:coachingPage, challenges:challengesPage, resources:resourcesPage, members:membersPage, moderator:moderatorPage, admin:adminPage};
+const pages = {home:homePage, apps:appsPage, community:communityPage, learn:learnPage, start:startPage, events:eventsPage, coaching:coachingPage, challenges:challengesPage, resources:resourcesPage, members:membersPage, moderator:moderatorPage, admin:adminPage};
 function render(page="home") {
+  document.body.classList.toggle("guest-view",accessRole==="Guest");
   if(accessRole==="Guest"){
-    pageContent.innerHTML=`<section class="pathway card access-denied"><span class="eyebrow">Own Your Options Collective</span><h1>Sign in to enter the member hub.</h1><p>Your community, training, resources, events, and progress live inside.</p><button class="primary" id="gatewaySignIn">Member sign in</button></section>`;
-    document.querySelector("#gatewaySignIn").addEventListener("click",openAccount);
+    pageContent.innerHTML=`<section class="public-landing"><div class="landing-copy"><span class="eyebrow">Own Your Options Collective</span><h1>Create more options.<br><em>Live by choice.</em></h1><p>A supportive community, practical training, live coaching, challenges, and resources designed to help you build confidence, income, freedom, and fulfillment.</p><div class="landing-actions"><button class="primary" id="gatewaySignIn">Member sign in</button><button class="landing-secondary" id="gatewayJoin">Join the Collective</button></div><div class="landing-points"><span>Community support</span><span>Practical learning</span><span>Weekly momentum</span></div></div><div class="landing-panel card"><span class="eyebrow">Inside the Collective</span><h2>Your next option starts here.</h2><div class="landing-feature"><b>01</b><div><strong>Find your pathway</strong><small>Start with what matters most right now.</small></div></div><div class="landing-feature"><b>02</b><div><strong>Learn useful skills</strong><small>Build business, confidence, AI, and communication skills.</small></div></div><div class="landing-feature"><b>03</b><div><strong>Take action together</strong><small>Join challenges, live sessions, and community conversations.</small></div></div></div></section>`;
+    document.querySelectorAll("#gatewaySignIn,#gatewayJoin").forEach(button=>button.addEventListener("click",openAccount));
     return;
   }
   if(accessRole==="Blocked"){
@@ -204,6 +225,11 @@ function bindPageEvents(page) {
   document.querySelectorAll("[data-complete-content]").forEach(button=>button.addEventListener("click",async()=>{const contentId=button.dataset.completeContent,member=managedMembers.find(x=>sameId(x.id,getSession()?.user?.id));if(member){member.completions[contentId]=true;saveMembers()}if(cloudReady&&getSession())try{await upsertProgress({user_id:getSession().user.id,content_id:contentId,status:"Completed",percent:100,completed_at:new Date().toISOString(),updated_at:new Date().toISOString()});button.textContent="Completed ✓";button.classList.add("completed")}catch(e){showToast(e.message)}}));
   document.querySelectorAll(".rsvp").forEach(x=>x.addEventListener("click",()=>{x.textContent="You're going ✓";x.style.background="#df7546"}));
   document.querySelectorAll(".pill").forEach(x=>x.addEventListener("click",()=>{document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));x.classList.add("active")}));
+  document.querySelectorAll(".play").forEach(x=>x.addEventListener("click",()=>showToast("April's welcome video will open here.")));
+  document.querySelectorAll(".challenge-card .primary").forEach(x=>x.addEventListener("click",()=>{x.textContent="Challenge joined ✓";showToast("Challenge added to your plan")}));
+  document.querySelectorAll(".app-launch-button").forEach(button=>button.addEventListener("click",()=>openConnectedApp(button.dataset.appLink)));
+  document.querySelectorAll("[data-open-app-links]").forEach(button=>button.addEventListener("click",()=>{adminTab="app-links";render("admin")}));
+  document.querySelectorAll(".page-head>.primary:not(.app-launch-button),.locked-hero .primary:not(.app-launch-button)").forEach(x=>x.addEventListener("click",()=>showToast("This option is ready for April to connect.")));
 }
 function injectManagedContent(page){
   const areas={learn:"Learn",events:"Live Events",coaching:"Coaching Hub",challenges:"Challenges",resources:"Resource Vault"};
@@ -216,6 +242,7 @@ function bindAdminEvents(){
   document.querySelectorAll("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{adminTab=button.dataset.adminTab;render("admin")}));
   document.querySelector("#exportMembers")?.addEventListener("click",exportMemberCsv);
   document.querySelector("#copyJoinLink")?.addEventListener("click",async()=>{await navigator.clipboard.writeText(location.origin+location.pathname);showToast("Member join link copied")});
+  document.querySelector("#appLinksForm")?.addEventListener("submit",event=>{event.preventDefault();appLinks={daily:document.querySelector("#dailyAppLink").value.trim(),coaching:document.querySelector("#coachingAppLink").value.trim()};saveAppLinks();showToast("App links saved");render("apps")});
   document.querySelector("#adminContentForm")?.addEventListener("submit",async event=>{event.preventDefault();const item={id:Date.now(),title:document.querySelector("#adminContentTitle").value.trim(),area:document.querySelector("#adminContentArea").value,type:document.querySelector("#adminContentType").value,status:document.querySelector("#adminContentStatus").value,description:document.querySelector("#adminContentDescription").value.trim()};managedContent.unshift(item);saveContent();if(cloudReady)try{await upsertHubContent(item)}catch(e){showToast(e.message)}render("admin")});
   document.querySelectorAll("[data-content-toggle]").forEach(button=>button.addEventListener("click",async()=>{const item=managedContent.find(x=>sameId(x.id,button.dataset.contentToggle));item.status=item.status==="Published"?"Draft":"Published";saveContent();if(cloudReady)try{await upsertHubContent(item)}catch(e){showToast(e.message)}render("admin")}));
   document.querySelectorAll("[data-content-delete]").forEach(button=>button.addEventListener("click",async()=>{const id=button.dataset.contentDelete;managedContent=managedContent.filter(x=>!sameId(x.id,id));saveContent();if(cloudReady)try{await removeHubContent(id)}catch(e){showToast(e.message)}render("admin")}));
@@ -245,6 +272,11 @@ function showResult(type) {
   const results={income:["Creating More Income Options","Start with the Creating Options Framework, then join the income options conversation."],skills:["Business Skills","Build a practical foundation with short lessons and useful templates."],confidence:["Confidence Challenge","Small brave actions will help you build confidence from real evidence."],starting:["Start Again Pathway","Begin with clarity, resourcefulness, and a welcoming group who gets it."],retirement:["Your Next Chapter Pathway","Map your skills, interests, and possibilities for what comes next."]};
   document.querySelector("#quiz").innerHTML=`<span class="eyebrow">Your recommended pathway</span><div class="quiz-result"><h1>${results[type][0]}</h1><p>${results[type][1]}</p><button class="primary" data-page="${type==="confidence"?"challenges":"learn"}">Begin my pathway →</button></div><button class="text-button" style="margin-top:18px" data-page="start">Retake quiz</button>`;
   bindPageEvents("start");
+}
+function openConnectedApp(type){
+  const url=appLinks[type];
+  if(!url){showToast(accessRole==="Owner"?"Add this link in April Admin → App Links.":"This app link is coming soon.");return}
+  window.open(url,"_blank","noopener");
 }
 function escapeHtml(text) { const d=document.createElement("div"); d.textContent=text; return d.innerHTML; }
 function showToast(message){const toast=document.querySelector("#toast");toast.textContent=message;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2600)}
@@ -294,3 +326,4 @@ async function initializeCloud(){
   }
 }
 initializeCloud();
+})();
