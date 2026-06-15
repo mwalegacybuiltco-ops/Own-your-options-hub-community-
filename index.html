@@ -8,7 +8,352 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Italiana&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260615-0215">
+  <style>
+:root {
+  --ink: #26362f;
+  --muted: #718078;
+  --paper: #f7f5ef;
+  --card: #fff;
+  --line: #e7e5dd;
+  --green: #2f6854;
+  --green-dark: #214c3e;
+  --mint: #dceade;
+  --peach: #f4d2b8;
+  --orange: #df7546;
+  --gold: #f1c86b;
+  --shadow: 0 12px 35px rgba(35, 55, 45, .08);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "DM Sans", sans-serif; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.sidebar { position: fixed; inset: 0 auto 0 0; width: 248px; background: #fff; border-right: 1px solid var(--line); padding: 24px 16px 18px; display: flex; flex-direction: column; z-index: 5; }
+.brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 26px; text-decoration: none; color: var(--ink); }
+.brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px 12px 12px 3px; background: var(--green); color: #fff; font: 700 22px/1 "Italiana"; }
+.brand strong { display: block; font: 700 21px/1 "Italiana"; }
+.brand small { display: block; margin-top: 4px; font-size: 8px; letter-spacing: 2.4px; color: var(--orange); font-weight: 700; }
+.main-nav { display: grid; gap: 3px; }
+.nav-item { border: 0; background: transparent; color: #66736d; text-align: left; padding: 10px 11px; border-radius: 9px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 11px; }
+.nav-item span { font-size: 18px; width: 20px; text-align: center; color: #708077; }
+.nav-item:hover, .nav-item.active { color: var(--green-dark); background: #edf4ef; }
+.nav-item b { margin-left: auto; border-radius: 99px; background: var(--orange); color: #fff; padding: 2px 6px; font-size: 9px; }
+.nav-item em { margin-left: auto; background: var(--gold); color: #795c19; padding: 2px 5px; border-radius: 4px; font-size: 8px; font-style: normal; }
+.sidebar-progress { margin-top: auto; padding: 14px; border-radius: 12px; background: #f7f5ed; }
+.sidebar-progress > div:first-child { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; }
+.sidebar-progress .progress { margin: 9px 0 7px; height: 5px; background: #dfe2da; border-radius: 9px; overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--orange); border-radius: inherit; }
+.sidebar-progress small { color: var(--muted); font-size: 9px; }
+.profile-mini { display: flex; align-items: center; gap: 8px; padding: 15px 6px 0; }
+.profile-mini strong, .profile-mini small { display: block; font-size: 10px; }
+.profile-mini small { color: var(--muted); font-size: 8px; margin-top: 2px; }
+.profile-mini button { margin-left: auto; background: none; border: 0; color: var(--muted); }
+.avatar { flex: 0 0 auto; width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 700; border: 2px solid #fff; background: #7f9789; }
+.avatar-ap { background: #c68a68; }
+.avatar-april { background: var(--green); }
+.avatar-sam { background: #a47474; }
+.avatar-nina { background: #9a865d; }
+.avatar-jay { background: #59768b; }
+
+main { margin-left: 248px; min-height: 100vh; }
+.topbar { height: 72px; background: rgba(255,255,255,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); display: flex; align-items: center; padding: 0 38px; position: sticky; top: 0; z-index: 4; }
+.search { width: 290px; height: 36px; display: flex; align-items: center; gap: 8px; background: #f5f5f1; border: 1px solid #ecece5; border-radius: 9px; padding: 0 10px; color: var(--muted); }
+.search input { border: 0; outline: 0; background: transparent; width: 100%; font-size: 11px; }
+kbd { border: 1px solid #ddd; background: #fff; border-radius: 4px; padding: 2px 4px; font-size: 8px; white-space: nowrap; }
+.top-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.icon-button { position: relative; border: 0; background: transparent; font-size: 17px; color: var(--green); }
+.icon-button i { width: 5px; height: 5px; background: var(--orange); border-radius: 50%; position: absolute; right: 2px; top: 2px; }
+.new-post-button, .primary { border: 0; background: var(--green); color: white; border-radius: 8px; padding: 10px 15px; font-size: 11px; font-weight: 700; box-shadow: 0 5px 12px rgba(47,104,84,.18); }
+.mobile-menu { display: none; }
+#pageContent { padding: 32px 38px 60px; max-width: 1500px; margin: auto; }
+.guest-view .sidebar,.guest-view .topbar{display:none}.guest-view main{margin-left:0}.guest-view #pageContent{max-width:1400px;padding-top:30px}
+.public-landing{min-height:calc(100vh - 140px);display:grid;grid-template-columns:1.25fr .75fr;gap:42px;align-items:center;padding:38px 2vw}.landing-copy{max-width:720px}.landing-copy h1{font-size:clamp(45px,7vw,92px);line-height:.96;margin:18px 0}.landing-copy h1 em{color:var(--purple-bright);font-weight:inherit}.landing-copy>p{max-width:620px;font-size:14px;line-height:1.8}.landing-actions{display:flex;gap:12px;margin:28px 0}.landing-secondary{border:1px solid var(--gold);background:transparent;color:var(--gold);padding:11px 18px;border-radius:5px;font-weight:700}.landing-points{display:flex;gap:12px;flex-wrap:wrap}.landing-points span{border:1px solid var(--line);border-radius:20px;padding:8px 12px;color:var(--muted);font-size:9px}.landing-panel{padding:34px;background:linear-gradient(145deg,#17132f,#0c1020);border-color:#503667}.landing-panel h2{font-size:34px;margin:12px 0 24px}.landing-feature{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--line)}.landing-feature b{color:var(--gold)}.landing-feature strong,.landing-feature small{display:block}.landing-feature small{color:var(--muted);margin-top:5px}
+.app-launch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.app-launch-card{min-height:360px;padding:32px;display:flex;flex-direction:column;align-items:flex-start;background:radial-gradient(circle at 85% 10%,#34205b,#0d1425 48%,#080c19)}.app-launch-card.coaching-app{background:radial-gradient(circle at 85% 10%,#5b351b,#17132f 48%,#080c19)}.app-label{color:var(--gold);font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase}.app-launch-icon{width:78px;height:78px;display:grid;place-items:center;border:1px solid #76562e;border-radius:18px;color:var(--gold);font-weight:800;margin:34px 0 22px;background:#17132f}.app-launch-card h2{font-size:30px}.app-launch-card p{font-size:10px;line-height:1.7;max-width:430px}.app-launch-card .primary{margin-top:auto}.app-owner-note{margin-top:20px;padding:16px;color:var(--muted);font-size:9px}.app-owner-note button{border:0;background:none;color:var(--gold);font-weight:800}
+.eyebrow { color: var(--orange); font-size: 9px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
+h1, h2, h3 { margin: 0; font-family: "Italiana", serif; }
+h1 { font-size: 30px; line-height: 1.15; }
+h2 { font-size: 20px; }
+h3 { font-size: 15px; }
+p { color: var(--muted); }
+.page-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 24px; }
+.page-head p { font-size: 11px; margin: 6px 0 0; }
+.text-button { background: none; border: 0; color: var(--green); font-size: 10px; font-weight: 700; }
+.home-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(260px, .7fr); gap: 24px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 3px 14px rgba(35,55,45,.025); }
+.welcome { min-height: 230px; padding: 31px; background: linear-gradient(110deg, #dfeade 0 62%, #bad0bf 62%); position: relative; overflow: hidden; display: flex; align-items: center; }
+.welcome::after { content:""; position:absolute; width:260px; height:260px; border-radius:50%; right:-40px; top:-70px; border: 42px solid rgba(255,255,255,.28); }
+.welcome-copy { width: 58%; position: relative; z-index: 1; }
+.welcome h1 { margin: 8px 0 10px; }
+.welcome p { color: #50685d; font-size: 11px; line-height: 1.65; }
+.play-wrap { position: absolute; z-index: 2; right: 12%; text-align: center; }
+.play { width: 68px; height: 68px; border-radius: 50%; border: 7px solid rgba(255,255,255,.38); background: var(--green); color: white; font-size: 20px; }
+.play-wrap small { display: block; margin-top: 10px; color: #466255; font-size: 9px; font-weight: 700; }
+.section { margin-top: 26px; }
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; }
+.challenge { padding: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+.challenge-icon { width: 45px; height: 45px; border-radius: 12px; background: #f8e5d7; display: grid; place-items: center; color: var(--orange); font-size: 20px; }
+.challenge p { margin: 5px 0 9px; font-size: 10px; }
+.challenge .progress { width: 240px; height: 5px; border-radius: 9px; background: #ebece8; }
+.challenge-meta { text-align: right; font-size: 9px; color: var(--muted); }
+.challenge-meta strong { display: block; color: var(--green); font-size: 16px; font-family: "Italiana"; }
+.training-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }
+.training-card { overflow: hidden; }
+.training-art { height: 90px; position: relative; background: #e5d6c3; display: grid; place-items: center; font: 700 30px/1 "Italiana"; color: rgba(255,255,255,.75); }
+.training-art.green { background: #8da993; }.training-art.orange { background: #d29a75; }.training-art.gold { background: #c7ae70; }
+.training-card .body { padding: 13px; }
+.training-card h3 { font-family: "DM Sans"; font-size: 11px; line-height: 1.4; }
+.training-card small { display: block; color: var(--muted); font-size: 8px; margin-top: 7px; }
+.side-column { display: grid; gap: 18px; align-content: start; }
+.event-card { overflow: hidden; }
+.event-top { background: var(--green); color: white; padding: 18px; }
+.event-top .eyebrow { color: var(--peach); }
+.event-top h2 { margin: 7px 0 5px; font-size: 18px; }
+.event-top p { color: #c8dbd1; font-size: 9px; margin: 0; }
+.event-details { padding: 16px; }
+.detail-row { display: flex; gap: 10px; margin-bottom: 11px; color: var(--muted); font-size: 9px; }
+.detail-row span { color: var(--orange); }
+.event-details .primary { width: 100%; margin-top: 4px; }
+.wins { padding: 17px; }
+.win { display: flex; gap: 9px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.win:last-child { border: 0; padding-bottom: 0; }
+.win p { margin: 2px 0 4px; font-size: 9px; line-height: 1.45; }
+.win small { color: #a0aaa4; font-size: 8px; }
+.member-stack { display: flex; }
+.member-stack .avatar { margin-left: -7px; }
+.member-stack .avatar:first-child { margin: 0; }
+.joined { padding: 18px; display: flex; justify-content: space-between; align-items: center; }
+.joined strong { font: 700 17px/1 "Italiana"; display: block; }
+.joined small { color: var(--muted); font-size: 8px; }
+
+.page-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr) 240px; gap: 20px; align-items: start; }
+.spaces, .community-aside { padding: 15px; position: sticky; top: 94px; }
+.spaces h3, .community-aside h3 { margin-bottom: 12px; }
+.space-button { width: 100%; border: 0; background: transparent; border-radius: 8px; text-align: left; padding: 9px; font-size: 9px; color: var(--muted); }
+.space-button.active, .space-button:hover { background: #edf4ef; color: var(--green); font-weight: 700; }
+.feed { display: grid; gap: 15px; }
+.quick-post { padding: 15px; display: flex; gap: 10px; align-items: center; }
+.quick-post button { flex: 1; text-align: left; color: var(--muted); background: #f7f7f3; border: 1px solid var(--line); border-radius: 20px; padding: 10px 14px; font-size: 10px; }
+.post { padding: 17px; }
+.post-head { display: flex; gap: 9px; }
+.post-head strong { font-size: 10px; display: block; }.post-head small { font-size: 8px; color: var(--muted); }
+.space-tag { margin-left: auto; align-self: start; font-size: 8px; color: var(--green); background: #edf4ef; border-radius: 99px; padding: 4px 7px; }
+.post > p { font-size: 10px; line-height: 1.6; color: #4c5c54; }
+.post-image { width: 100%; max-height: 340px; object-fit: cover; border-radius: 10px; margin-top: 4px; }
+.post-actions { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 10px; display: flex; gap: 16px; }
+.post-actions button { border: 0; background: transparent; color: var(--muted); font-size: 9px; }
+.post-actions button.liked { color: var(--orange); font-weight: 700; }
+.comments { display: grid; gap: 8px; margin-top: 10px; }
+.comment { display: flex; gap: 7px; }
+.comment .avatar { width: 27px; height: 27px; font-size: 8px; }
+.comment div:last-child { background: #f5f5f1; border-radius: 8px; padding: 7px 9px; }
+.comment strong { font-size: 8px; }.comment p { margin: 2px 0 0; font-size: 9px; }
+.comment-form { display: none; gap: 6px; margin-top: 9px; }.comment-form.open { display: flex; }
+.comment-form input { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 7px; font-size: 9px; }
+.comment-form button { border: 0; background: var(--green); color: white; border-radius: 7px; font-size: 9px; }
+.prompt-box { padding: 15px; background: #f5e2d2; border-color: #efd6c3; }
+.prompt-box span { font-size: 8px; color: var(--orange); font-weight: 700; }.prompt-box p { font-size: 10px; color: #755f50; line-height: 1.5; }
+.online-list { display: grid; gap: 9px; margin-top: 12px; }.online { display: flex; align-items: center; gap: 7px; font-size: 9px; }.online i { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: #69a67e; }
+
+.category-grid, .challenge-grid, .resource-grid, .members-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.category-card, .resource-card, .member-card { padding: 20px; }
+.category-card .symbol { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; background: var(--mint); color: var(--green); margin-bottom: 18px; }
+.category-card p, .resource-card p, .member-card p { font-size: 9px; line-height: 1.6; }
+.category-card small, .resource-card small { font-size: 8px; color: var(--orange); font-weight: 700; }
+.pathway { max-width: 760px; margin: 20px auto; padding: 35px; text-align: center; }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+.quiz-option { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 14px; color: var(--ink); font-size: 10px; font-weight: 600; }
+.quiz-option:hover { border-color: var(--green); background: #edf4ef; }
+.quiz-result { padding: 22px; background: var(--mint); border-radius: 12px; margin-top: 20px; }
+.quiz-result p { font-size: 10px; }
+.event-list { display: grid; gap: 13px; }
+.event-row { display: grid; grid-template-columns: 65px 1fr auto; align-items: center; gap: 18px; padding: 16px; }
+.date-box { background: var(--mint); color: var(--green); border-radius: 10px; padding: 9px; text-align: center; }.date-box strong { display:block; font: 700 20px/1 "Italiana"; }.date-box small { font-size: 8px; }
+.event-row p { margin: 4px 0 0; font-size: 9px; }
+.locked-hero { padding: 38px; background: linear-gradient(120deg, var(--green), #163e31); color: white; display: grid; grid-template-columns: 1.3fr .7fr; }
+.locked-hero p { color: #c8dbd1; font-size: 10px; line-height: 1.7; }.locked-hero .primary { background: var(--gold); color: #5e491c; }
+.benefits { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 20px; }.benefit { padding: 18px; }.benefit p { font-size: 9px; }
+.challenge-card { overflow: hidden; }.challenge-banner { height: 95px; display: grid; place-items:center; background: var(--mint); font: 700 25px/1 "Italiana"; color: var(--green); }.challenge-card:nth-child(2) .challenge-banner{background:#f5dfcf;color:#b9653e}.challenge-card:nth-child(3) .challenge-banner{background:#eee3bd;color:#8b742c}.challenge-card .body { padding: 17px; }.challenge-card p{font-size:9px}.challenge-card .primary{width:100%}
+.resource-filter { display:flex; gap:7px; margin-bottom:18px; flex-wrap:wrap }.pill { border:1px solid var(--line); background:#fff; padding:7px 10px; border-radius:99px; font-size:9px;color:var(--muted)}.pill.active{background:var(--green);color:#fff;border-color:var(--green)}
+.resource-card .file-type { display:grid;place-items:center;width:38px;height:45px;border-radius:6px;background:#f4e0d2;color:var(--orange);font-size:9px;font-weight:700;margin-bottom:14px}
+.member-card{text-align:center}.member-card .avatar{width:60px;height:60px;margin:0 auto 10px;font-size:14px}.member-card .tags{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}.tag{background:#edf4ef;color:var(--green);font-size:7px;padding:4px 6px;border-radius:99px}
+
+dialog { border: 0; padding: 0; border-radius: 16px; box-shadow: var(--shadow); width: min(540px, 92vw); }
+dialog::backdrop { background: rgba(25,40,33,.55); backdrop-filter: blur(3px); }
+.composer-card { padding: 22px; display: grid; gap: 14px; }
+.dialog-head { display:flex;justify-content:space-between;align-items:start}.dialog-head h2{margin-top:5px}.dialog-head button{border:0;background:#f5f5f1;border-radius:50%;width:28px;height:28px}
+.composer-card label { display:grid;gap:5px;color:var(--muted);font-size:9px;font-weight:700}.composer-card select,.composer-card textarea{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;outline:none}.composer-card textarea{height:140px;resize:vertical;font-size:11px}.composer-tools{display:flex;justify-content:space-between;align-items:center}.attach{cursor:pointer}.attach input{display:none}.image-preview img{max-height:150px;max-width:100%;border-radius:8px}
+.empty { padding: 35px; text-align: center; color: var(--muted); }
+
+@media (max-width: 1050px) {
+  .sidebar { width: 205px; } main { margin-left: 205px; }
+  .home-grid { grid-template-columns: 1fr; }.side-column { grid-template-columns: 1fr 1fr; }
+  .page-layout { grid-template-columns: 180px 1fr; }.community-aside { display: none; }
+  .category-grid, .challenge-grid, .resource-grid, .members-grid { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 760px) {
+  .public-landing{grid-template-columns:1fr;padding:18px 0}.landing-panel{padding:24px}.landing-actions{flex-direction:column;align-items:stretch}.landing-actions button{width:100%}
+  .app-launch-grid{grid-template-columns:1fr}.app-launch-card{min-height:310px;padding:24px}
+  .sidebar { transform: translateX(-100%); transition: .2s; box-shadow: var(--shadow); }.sidebar.open { transform:translateX(0); }
+  main { margin-left: 0; }.mobile-menu { display:block;border:0;background:none;font-size:19px;margin-right:10px }.topbar{padding:0 16px}.search{display:none}#pageContent{padding:24px 16px}
+  .welcome-copy { width:100%; }.play-wrap{display:none}.side-column,.training-grid,.category-grid,.challenge-grid,.resource-grid,.members-grid,.benefits{grid-template-columns:1fr}
+  .page-layout{grid-template-columns:1fr}.spaces{position:static;display:flex;overflow:auto;gap:5px}.spaces h3{display:none}.space-button{white-space:nowrap;width:auto}.quiz-options{grid-template-columns:1fr}.event-row{grid-template-columns:55px 1fr}.event-row button{grid-column:2}.locked-hero{grid-template-columns:1fr}.new-post-button{font-size:0}.new-post-button::after{content:"+";font-size:18px}
+}
+
+/* Own Your Options brand integration */
+:root {
+  --ink: #f8f5ef;
+  --muted: #a9aec0;
+  --paper: #040713;
+  --card: #0b1121;
+  --line: #242a40;
+  --green: #682ca0;
+  --green-dark: #8c49c7;
+  --mint: #141630;
+  --peach: #25152f;
+  --orange: #d99a3e;
+  --gold: #d99a3e;
+  --purple: #682ca0;
+  --purple-bright: #8c49c7;
+  --pink: #dc286c;
+  --teal: #2aa696;
+  --shadow: 0 18px 55px rgba(0,0,0,.38);
+}
+body { background: var(--paper); }
+h1, h2, h3 { font-family: "Italiana", serif; font-weight: 400; }
+.sidebar { background: #050816; border-color: var(--line); }
+.brand { color: var(--ink); }
+.brand-mark {
+  width: 45px; height: 36px; border-radius: 18px; border: 1px solid var(--gold); background: transparent;
+  color: var(--gold); display: flex; gap: 1px; font: 400 15px/1 "Italiana"; box-shadow: inset 0 0 18px rgba(104,44,160,.25);
+}
+.brand-mark i { color: var(--green-dark); font-size: 11px; font-style: normal; }
+.brand-mark b { font-weight: 400; }
+.brand strong { font-family: "DM Sans"; font-size: 10px; letter-spacing: 1.3px; }
+.brand small { color: var(--green-dark); letter-spacing: 2.3px; }
+.nav-item { color: var(--muted); border-radius: 6px; }
+.nav-item span { color: var(--green-dark); }
+.nav-item:hover, .nav-item.active { color: var(--ink); background: #15122e; box-shadow: inset 2px 0 var(--gold); }
+.nav-item b { background: var(--gold); color: #19121e; }
+.nav-item em { background: var(--green); color: #fff; }
+.sidebar-progress { background: #0b1121; border: 1px solid var(--line); }
+.sidebar-progress .progress { background: #20263a; }
+.profile-mini { border-top: 1px solid var(--line); margin-top: 12px; }
+.profile-mini button { color: var(--muted); }
+.topbar { background: rgba(4,7,19,.94); border-color: var(--line); }
+.search { background: #0b1121; border-color: var(--line); }
+.search input { color: var(--ink); }
+kbd { background: #11182a; border-color: var(--line); color: var(--muted); }
+.icon-button { color: var(--green-dark); }
+.new-post-button, .primary { background: var(--purple); color: #fff; border: 1px solid var(--purple-bright); border-radius: 5px; box-shadow: none; }
+.new-post-button:hover, .primary:hover { background: #7d38b5; }
+.account-button{border:1px solid #4c3c60;background:#11182a;color:var(--ink);border-radius:50px;min-width:38px;height:34px;padding:0 11px;font-size:9px;font-weight:700}
+.build-label{color:#727a90;font-size:6px;letter-spacing:1px}
+.text-button { color: var(--gold); }
+.card { background: linear-gradient(145deg,#0d1425,#090e1c); border-color: var(--line); box-shadow: none; border-radius: 8px; }
+.eyebrow { color: var(--green-dark); }
+.page-head p, p { color: var(--muted); }
+.welcome {
+  background: radial-gradient(circle at 68% 22%, rgba(104,44,160,.3), transparent 32%), linear-gradient(90deg,#070a17 0 58%,rgba(7,10,23,.44) 78%), url("assets/brand-board.png") center right/cover;
+  border-color: #5a3b73; min-height: 300px;
+}
+.welcome::after { display: none; }
+.welcome-copy { width: 61%; }
+.welcome h1 { font-size: 52px; line-height: .98; }
+.welcome h1 em { color: var(--gold); font-weight: 400; }
+.welcome p { color: #d2ccd7; font-size: 12px; }
+.play-wrap { right: 12%; bottom: 30px; }
+.play { background: var(--gold); color: #171019; border-color: rgba(229,179,79,.25); }
+.play-wrap small { color: #f0e8ef; }
+.challenge-icon, .category-card .symbol { background: #171333; color: var(--gold); border: 1px solid #54316f; }
+.challenge .progress, .progress { background: #20263a; }
+.progress i { background: linear-gradient(90deg,var(--teal),var(--gold)); }
+.challenge-meta strong, .category-card small, .resource-card small { color: var(--gold); }
+.training-art.green, .training-art.orange, .training-art.gold {
+  background: radial-gradient(circle at 50% 35%, #3a1e62, #0b1020 70%); color: var(--gold); border-bottom: 1px solid var(--line);
+}
+.event-top { background: radial-gradient(circle at 85% 10%,#3d215f,#101326 55%,#070a16); border-bottom: 1px solid #4c3565; }
+.event-top .eyebrow { color: var(--gold); }
+.event-details .primary, .challenge-card .primary, .locked-hero .primary { background: var(--gold); border-color: var(--gold); color: #13101b; }
+.event-top p { color: #c9c1ce; }
+.detail-row span, .eyebrow.gold { color: var(--gold); }
+.wins .win { border-color: var(--line); }
+.avatar { border-color: #11182a; background: linear-gradient(135deg,var(--gold),var(--purple-bright)); color: #100c18; }
+.avatar-april { background: linear-gradient(135deg,var(--green),var(--gold)); }
+.spaces, .community-aside { background: #070b18; }
+.space-button { color: var(--muted); }
+.space-button.active, .space-button:hover { color: var(--gold); background: #16132f; }
+.quick-post button, .comment div:last-child { background: #080d1b; border-color: var(--line); color: var(--muted); }
+.space-tag, .tag { color: var(--purple-bright); background: #171333; }
+.post > p { color: #c9c3ce; }
+.post-actions, .win { border-color: var(--line); }
+.post-actions button.liked { color: var(--pink); }
+.comment-form input, .composer-card select, .composer-card textarea {
+  color: var(--ink); background: #080d1b; border-color: #343953;
+}
+.comment-form button { background: var(--gold); color: #171019; }
+.prompt-box { background: #17132f; border-color: #4f316a; }
+.prompt-box span { color: var(--gold); }.prompt-box p { color: #c9bfce; }
+.online i { background: var(--teal); }
+.framework-strip { display: grid; grid-template-columns: repeat(5,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 22px; }
+.framework-strip div { background: #080c19; padding: 14px; display: flex; gap: 9px; align-items: center; font-size: 9px; color: var(--muted); }
+.framework-strip b { width: 24px; height: 24px; flex: 0 0 auto; border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; display: grid; place-items: center; }
+.quiz-option, .pill { background: var(--card); color: var(--ink); border-color: var(--line); }
+.quiz-option:hover, .pill.active { background: #17132f; color: var(--gold); border-color: #76562e; }
+.quiz-result { background: #17132f; border: 1px solid #583475; }
+.date-box { background: #17132f; color: var(--gold); border: 1px solid #593474; }
+.locked-hero { background: radial-gradient(circle at 85% 20%,#3c205e,#101326 52%,#070a16); border-color: #503667; overflow: hidden; }
+.locked-hero p { color: #c9c1ce; }
+.locked-hero .primary:hover, .event-details .primary:hover, .challenge-card .primary:hover { background: #edb65b; }
+.coaching-portrait { min-height: 225px; margin: -38px -38px -38px 0; background: linear-gradient(90deg,#101326,transparent 42%), url("assets/april-portrait.png") center 15%/cover; }
+.challenge-banner { background: #17132f !important; color: var(--gold) !important; border-bottom: 1px solid var(--line); }
+.resource-card .file-type { background: #17132f; color: var(--gold); border: 1px solid #53326c; }
+dialog { background: var(--card); color: var(--ink); border: 1px solid #5b4567; }
+dialog::backdrop { background: rgba(5,4,8,.78); }
+.dialog-head button { background: #17132f; color: var(--muted); }
+.account-card{min-width:min(460px,90vw)}.account-note{font-size:10px;line-height:1.6}.account-success{color:var(--teal);font-size:9px;border:1px solid #285a58;background:#102a2c;border-radius:5px;padding:9px}.wide{width:100%}#authMessage{color:#ff8caf;font-size:8px;min-height:12px}
+.toast{position:fixed;z-index:90;right:22px;bottom:-70px;background:var(--gold);color:#171019;border-radius:5px;padding:11px 15px;font-size:9px;font-weight:800;transition:.25s}.toast.show{bottom:22px}
+.nav-item b { background: var(--pink); color: white; }
+.win:first-of-type strong::before { content: "♡ "; color: var(--pink); }
+.admin-nav { margin-top: 12px; border-top: 1px solid var(--line); border-radius: 0 0 6px 6px; padding-top: 15px; }
+.admin-tabs { display: flex; gap: 6px; padding-bottom: 18px; overflow-x: auto; }
+.admin-tabs button { color: var(--muted); background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 9px 14px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.admin-tabs button.active { color: var(--gold); border-color: #76562e; background: #17132f; }
+.admin-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.metric-card { padding: 20px; }.metric-card strong { display: block; font: 400 38px/1 "Italiana"; color: var(--gold); margin-top: 10px; }.metric-card p { font-size: 9px; margin-bottom: 0; }
+.admin-two { display: grid; grid-template-columns: minmax(280px,.8fr) minmax(420px,1.2fr); gap: 18px; margin-top: 18px; align-items: start; }
+.admin-box { padding: 22px; }.admin-box h2 { margin: 5px 0 18px; }
+.admin-checklist { display: grid; gap: 2px; }.admin-checklist p { font-size: 10px; color: #c9c3ce; border-bottom: 1px solid var(--line); padding: 9px 0; margin: 0; }
+.attention-row { display: flex; gap: 9px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }.attention-row strong,.attention-row small { display:block;font-size:10px }.attention-row small{font-size:8px;color:var(--muted);margin-top:3px}
+.admin-form { display: grid; gap: 12px; }.admin-form label { display: grid; gap: 5px; color: var(--muted); font-size: 8px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+.admin-form input,.admin-form select,.admin-form textarea { width:100%;color:var(--ink);background:#080d1b;border:1px solid #343953;border-radius:5px;padding:10px;outline:none;font-size:10px;text-transform:none;letter-spacing:0 }.admin-form textarea{min-height:90px;resize:vertical}
+.field-pair { display:grid;grid-template-columns:1fr 1fr;gap:10px }.check-label{display:flex!important;grid-template-columns:auto 1fr!important;align-items:center;justify-content:start;text-transform:none!important}.check-label input{width:auto}
+.admin-list { display:grid;gap:9px;max-height:620px;overflow:auto;padding-right:3px }.admin-list-item{border:1px solid var(--line);background:#080d1b;border-radius:6px;padding:13px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.admin-list-item small,.admin-list-item strong{display:block}.admin-list-item small{font-size:7px;color:var(--purple-bright);text-transform:uppercase;letter-spacing:.5px}.admin-list-item strong{font-size:10px;margin-top:4px}.admin-list-item p{font-size:8px;margin:4px 0 0;line-height:1.5}.success{color:var(--teal)}.draft{color:var(--gold)}
+.item-buttons{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.item-buttons button,.admin-list-item>button{border:1px solid #47405c;background:#17132f;color:#d7d1dc;border-radius:4px;padding:6px 8px;font-size:8px}.item-buttons .danger,.admin-list-item>.danger{color:#ff8caf;border-color:#623149;background:#251021}
+.member-admin-main{display:flex;align-items:center;gap:9px}.status-note{font-size:8px;color:var(--muted)}
+.progress-table{margin-top:18px;border:1px solid var(--line);border-radius:6px;overflow:auto}.progress-row{min-width:720px;display:grid;grid-template-columns:1.2fr .7fr 1.3fr .8fr .7fr;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);font-size:9px}.progress-row:last-child{border-bottom:0}.progress-row>span>strong,.progress-row>span>small{display:block}.progress-row small{color:var(--muted);font-size:7px;margin-top:4px}.progress-head{background:#17132f;color:var(--gold);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}.progress-row .progress{height:5px;background:#20263a;border-radius:8px;overflow:hidden}
+.managed-section{border-top:1px solid var(--line);padding-top:24px}.managed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.complete-button{width:100%;border:1px solid #51356a;background:#17132f;color:var(--purple-bright);border-radius:4px;padding:7px;font-size:8px;font-weight:700}.complete-button.completed{border-color:#286d67;background:#0d292b;color:var(--teal)}
+.completion-section{margin-top:18px}.completion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.completion-member{border:1px solid var(--line);background:#080d1b;border-radius:6px;padding:13px}.completion-member>.member-admin-main{margin-bottom:10px}.completion-member>.member-admin-main strong,.completion-member>.member-admin-main small{display:block;font-size:9px}.completion-member>.member-admin-main small{color:var(--muted);font-size:7px;margin-top:3px}.completion-member>div:last-child{display:grid;gap:5px}.completion-member button{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:5px;text-align:left;border:1px solid var(--line);background:#0d1425;color:var(--muted);border-radius:4px;padding:7px;font-size:8px}.completion-member button span{color:var(--purple-bright);font-size:12px}.completion-member button small{font-size:6px;color:#747c90}.completion-member button.done{border-color:#276e68;color:var(--ink);background:#0d2228}.completion-member button.done span{color:var(--teal)}
+.moderator-banner,.roles-intro{padding:24px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:24px;background:radial-gradient(circle at 88% 20%,#34205b,#0d1425 55%,#080c19)}.moderator-banner h2,.roles-intro h2{margin:5px 0 8px}.moderator-banner p,.roles-intro p{font-size:9px;line-height:1.6;max-width:680px;margin:0}.moderator-banner>strong{font:400 42px/1 "Italiana";color:var(--gold);text-align:center;white-space:nowrap}.moderator-banner>strong small{display:block;color:var(--muted);font:700 7px/1.4 "DM Sans";text-transform:uppercase;letter-spacing:1px;margin-top:5px}
+.permission-legend{display:grid;gap:8px;min-width:190px}.permission-legend span{display:flex;align-items:center;gap:7px;font-size:8px;color:var(--muted)}.role-dot{width:8px;height:8px;border-radius:50%}.admin-dot{background:var(--gold)}.mod-dot{background:var(--purple-bright)}.member-dot{background:var(--teal)}
+.role-control{display:grid;justify-items:end;gap:6px}.role-control select{color:var(--ink);background:#17132f;border:1px solid #4f356a;border-radius:4px;padding:6px;font-size:8px}.role-control small{font-size:7px;color:var(--muted)}.role-badge{display:inline-block;border-radius:99px;padding:4px 7px;font-size:7px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}.role-admin{background:#382b16;color:var(--gold);border:1px solid #77582a}.role-moderator{background:#26153f;color:#c994f2;border:1px solid #63378b}.role-member{background:#102a2c;color:#64c6b9;border:1px solid #285a58}
+.permission-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.permission-grid article{padding:18px}.permission-grid h3{margin:15px 0 7px}.permission-grid p{font-size:8px;line-height:1.6;margin:0}
+.owner-lock{display:flex;align-items:center;gap:8px;color:var(--gold);background:#18120b;border:1px solid #644a25;border-radius:5px;padding:9px 12px;margin-bottom:18px;font-size:8px;font-weight:700;letter-spacing:.5px}.role-owner{background:#382b16;color:var(--gold);border:1px solid #77582a}
+.access-active{color:var(--teal)}.access-blocked{color:#ff7aa5}.access-archived{color:var(--gold)}.item-buttons .restore{color:#73d1c5;border-color:#286d67;background:#0d292b}
+.housekeeping-note{display:flex;gap:12px;align-items:center;padding:15px;margin:18px 0;border-color:#604925;background:#18130c}.housekeeping-note>span{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:50%;color:var(--gold);font-weight:800}.housekeeping-note p{margin:0;font-size:9px;line-height:1.6}.housekeeping-note strong{color:var(--gold)}
+.housekeeping-list{display:grid;gap:10px}.housekeeping-list>h2,.housekeeping-list>.eyebrow{grid-column:1/-1}.housekeeping-member{display:grid;grid-template-columns:1fr 1.2fr auto;gap:12px;align-items:center;border:1px solid var(--line);background:#080d1b;border-radius:6px;padding:12px}.housekeeping-member strong,.housekeeping-member small{display:block;font-size:9px}.housekeeping-member small{color:var(--muted);font-size:7px;margin-top:3px}.housekeeping-member label{color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.5px}.housekeeping-member textarea{display:block;width:100%;height:48px;margin-top:4px;resize:vertical;color:var(--ink);background:#0d1425;border:1px solid #343953;border-radius:4px;padding:7px;font-size:8px;text-transform:none}
+
+@media (max-width: 760px) {
+  .welcome { background-position: 62% center; }
+  .welcome-copy { width: 100%; background: rgba(9,8,13,.67); padding: 18px; border-radius: 6px; }
+  .welcome h1 { font-size: 40px; }
+  .framework-strip { grid-template-columns: 1fr; }
+  .coaching-portrait { display: none; }
+  .admin-metrics,.admin-two,.managed-grid,.completion-grid,.permission-grid{grid-template-columns:1fr}.field-pair{grid-template-columns:1fr}.admin-box{padding:16px}.moderator-banner,.roles-intro{display:block}.permission-legend{margin-top:18px}.housekeeping-member{grid-template-columns:1fr}
+}
+
+</style>
 </head>
 <body class="guest-view">
   <aside class="sidebar">
@@ -50,7 +395,7 @@
       <button class="mobile-menu" aria-label="Open menu">☰</button>
       <div class="search"><span>⌕</span><input placeholder="Search the collective..."><kbd>⌘ K</kbd></div>
       <div class="top-actions">
-        <small class="build-label">BUILD 0215</small>
+        <small class="build-label">BUILD 0555</small>
         <button class="icon-button" aria-label="Messages">◇<i></i></button>
         <button class="icon-button" aria-label="Notifications">♧<i></i></button>
         <button class="account-button" id="accountButton">Sign in</button>
@@ -112,7 +457,425 @@
     <div class="comment"><div class="avatar avatar-ap">YO</div><div><strong>Own Your Options Member</strong><p></p></div></div>
   </template>
 
-  <script src="cloud.js?v=20260615-0215"></script>
-  <script src="app.js?v=20260615-0215"></script>
+  <script>
+const config = {
+  url: "https://tuhxctvpljfqgakfspjb.supabase.co",
+  anonKey: "sb_publishable_a18abo02gPh5mmDt_lZ2Wg_wSiUpKL2"
+};
+const sessionKey = "oyo-cloud-session";
+
+const getSession = () => {
+  try { return JSON.parse(localStorage.getItem(sessionKey) || "null"); }
+  catch { localStorage.removeItem(sessionKey); return null; }
+};
+const signOut = () => localStorage.removeItem(sessionKey);
+
+async function request(path, options = {}, authenticated = true) {
+  const session = getSession();
+  const response = await fetch(`${config.url}${path}`, {
+    ...options,
+    headers: {
+      apikey: config.anonKey,
+      Authorization: `Bearer ${authenticated && session?.access_token ? session.access_token : config.anonKey}`,
+      ...(options.headers || {})
+    }
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || error.error_description || error.msg || "Cloud request failed");
+  }
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function signIn(email, password) {
+  const session = await request("/auth/v1/token?grant_type=password", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password })
+  }, false);
+  localStorage.setItem(sessionKey, JSON.stringify(session));
+  return session;
+}
+async function signUp(email, password, name) {
+  return request("/auth/v1/signup", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, data: { name } })
+  }, false);
+}
+async function getHubAccessRole() {
+  const session = getSession();
+  if (!session?.user?.id) return "Guest";
+  const owner = await request(`/rest/v1/oyo_app_owner?user_id=eq.${session.user.id}&select=user_id`);
+  if (owner?.length) return "Owner";
+  const membership = await request(`/rest/v1/oyo_memberships?user_id=eq.${session.user.id}&select=status`);
+  if (membership?.[0]?.status && membership[0].status !== "Active") return "Blocked";
+  const moderator = await request(`/rest/v1/oyo_staff_roles?user_id=eq.${session.user.id}&status=eq.Active&select=role`);
+  return moderator?.length ? "Moderator" : "Member";
+}
+const fetchHubContent = () => request("/rest/v1/oyo_hub_content?select=*&order=created_at.desc");
+const fetchProfiles = () => request("/rest/v1/oyo_member_profiles?select=*&order=display_name.asc");
+const fetchMemberships = () => request("/rest/v1/oyo_memberships?select=*&order=joined_at.desc");
+const fetchStaffRoles = () => request("/rest/v1/oyo_staff_roles?select=*");
+const fetchProgress = () => request("/rest/v1/oyo_member_progress?select=*");
+const fetchPosts = () => request("/rest/v1/oyo_community_posts?select=*&order=created_at.desc");
+const fetchComments = () => request("/rest/v1/oyo_community_comments?select=*&order=created_at.asc");
+
+const createPost = post => request("/rest/v1/oyo_community_posts", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"return=representation"}, body:JSON.stringify(post) });
+const createCloudComment = comment => request("/rest/v1/oyo_community_comments", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"return=representation"}, body:JSON.stringify(comment) });
+const removeCloudPost = id => request(`/rest/v1/oyo_community_posts?id=eq.${id}`, { method:"DELETE" });
+const removeCloudComment = id => request(`/rest/v1/oyo_community_comments?id=eq.${id}`, { method:"DELETE" });
+const upsertHubContent = item => request("/rest/v1/oyo_hub_content?on_conflict=id", { method:"POST", headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates,return=representation"}, body:JSON.stringify(item) });
+const removeHubContent = id => request(`/rest/v1/oyo_hub_content?id=eq.${id}`, { method:"DELETE" });
+const upsertProgress = item => request("/rest/v1/oyo_member_progress?on_conflict=user_id,content_id", { method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify(item) });
+const updateProfile = (userId, changes) => request(`/rest/v1/oyo_member_profiles?user_id=eq.${userId}`, { method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(changes) });
+const updateMembership = (userId, changes) => request(`/rest/v1/oyo_memberships?user_id=eq.${userId}`, { method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(changes) });
+const setMemberAccess = (userId,status,reason="") => request("/rest/v1/rpc/oyo_set_member_access", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_user_id:userId,new_status:status,reason}) });
+const permanentlyDeleteMember = userId => request("/rest/v1/rpc/oyo_permanently_delete_member", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_user_id:userId}) });
+const assignModerator = (userId, active=true) => active
+  ? request("/rest/v1/oyo_staff_roles?on_conflict=user_id",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"resolution=merge-duplicates"},body:JSON.stringify({user_id:userId,role:"moderator",status:"Active",assigned_by:getSession().user.id})})
+  : request(`/rest/v1/oyo_staff_roles?user_id=eq.${userId}`,{method:"DELETE"});
+
+globalThis.OYOCloud = {
+  getSession, signOut, signIn, signUp, getHubAccessRole, fetchHubContent,
+  fetchProfiles, fetchMemberships, fetchStaffRoles, fetchProgress, fetchPosts,
+  fetchComments, createPost, createCloudComment, removeCloudPost,
+  removeCloudComment, upsertHubContent, removeHubContent, upsertProgress,
+  updateProfile, updateMembership, setMemberAccess, permanentlyDeleteMember,
+  assignModerator
+};
+
+</script>
+  <script>
+(function(){
+const offlineCloud = {
+  getSession:()=>null, signOut:()=>{}, signIn:async()=>{throw new Error("The online sign-in connection is not available yet.")},
+  signUp:async()=>{throw new Error("The online account connection is not available yet.")}, getHubAccessRole:async()=>"Guest",
+  fetchHubContent:async()=>[], fetchProfiles:async()=>[], fetchMemberships:async()=>[], fetchStaffRoles:async()=>[],
+  fetchProgress:async()=>[], fetchPosts:async()=>[], fetchComments:async()=>[], createPost:async()=>null,
+  createCloudComment:async()=>null, removeCloudPost:async()=>null, removeCloudComment:async()=>null,
+  upsertHubContent:async()=>null, removeHubContent:async()=>null, upsertProgress:async()=>null,
+  updateProfile:async()=>null, updateMembership:async()=>null, setMemberAccess:async()=>null,
+  permanentlyDeleteMember:async()=>null, assignModerator:async()=>null
+};
+const {getSession,signOut,signIn,signUp,getHubAccessRole,fetchHubContent,fetchProfiles,fetchMemberships,fetchStaffRoles,fetchProgress,fetchPosts,fetchComments,createPost,createCloudComment,removeCloudPost,removeCloudComment,upsertHubContent,removeHubContent,upsertProgress,updateProfile,updateMembership,setMemberAccess,permanentlyDeleteMember,assignModerator}=globalThis.OYOCloud||offlineCloud;
+const readStored=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||"null")||fallback}catch{return fallback}};
+let accessRole = location.protocol === "file:" ? "Owner" : getSession() ? "Member" : "Guest";
+const spaces = ["All activity", "Introduce Yourself", "Wins & Celebrations", "Creating More Income Options", "Social Media & Content", "AI & Productivity", "Personal Growth", "Accountability Corner", "Ask April"];
+const categories = [
+  ["Responsibility", "Own your choices and create momentum.", "6 lessons", "✓"],
+  ["Resourcefulness", "Turn what you already have into options.", "8 lessons", "↗"],
+  ["Communication", "Connect clearly and confidently.", "5 lessons", "“”"],
+  ["Social Media", "Show up online with purpose.", "12 lessons", "#"],
+  ["AI Tools", "Use AI to save time and create more.", "9 lessons", "✦"],
+  ["Business Skills", "Build foundations that support growth.", "10 lessons", "▥"],
+  ["Leadership", "Lead yourself and others well.", "7 lessons", "♧"],
+  ["Creating Options Framework", "April's signature step-by-step framework.", "11 lessons", "◇"]
+];
+const defaultPosts = [
+  {name:"Nina Foster", initials:"NF", avatar:"avatar-nina", space:"Wins & Celebrations", time:"28 min ago", text:"A small win that feels very big: I sent my first proposal today. I almost talked myself out of it, then remembered that confidence comes after the action.", likes:18, comments:[["Samantha Lee","This is huge, Nina. Cheering you on!"]]},
+  {name:"April", initials:"A", avatar:"avatar-april", space:"Ask April", time:"2 hrs ago", text:"Monday reminder: you do not need the whole plan. You need one honest next move. What is yours this week?", likes:31, comments:[["Jay Williams","Mine is finally publishing the landing page."]]},
+  {name:"Samantha Lee", initials:"SL", avatar:"avatar-sam", space:"AI & Productivity", time:"Yesterday", text:"I used the weekly planning prompt from the Resource Vault and saved at least an hour. Sharing the win because simple systems really do add up.", likes:24, comments:[]}
+];
+let userPosts = readStored("oyo-community-posts",[]);
+let currentSpace = "All activity";
+let appLinks=readStored("oyo-app-links",{daily:"",coaching:""});
+const saveAppLinks=()=>localStorage.setItem("oyo-app-links",JSON.stringify(appLinks));
+
+const pageContent = document.querySelector("#pageContent");
+const composer = document.querySelector("#composer");
+function currentMemberIdentity(){
+  const session=getSession(), profile=managedMembers?.find(member=>sameId(member.id,session?.user?.id));
+  const emailName=session?.user?.email?.split("@")[0]?.replace(/[._-]+/g," ");
+  const name=profile?.name||session?.user?.user_metadata?.name||emailName||"Member";
+  return {name,initials:initials(name),role:accessRole==="Owner"?"Owner":accessRole==="Moderator"?"Moderator":"Own Your Options member"};
+}
+
+function homePage() {
+  const member=currentMemberIdentity();
+  return `
+    <div class="page-head"><div><span class="eyebrow">Welcome to Own Your Options</span><h1>Good morning, ${escapeHtml(member.name)}.</h1><p>Keep creating confidence, income, freedom, and fulfillment.</p></div><button class="text-button" data-page="start">View your pathway →</button></div>
+    <div class="home-grid"><div>
+      <section class="welcome card"><div class="welcome-copy"><span class="eyebrow">A message from April</span><h1>Own your <em>options.</em></h1><p>You have the power. You have the choices. You can create more options.</p></div><div class="play-wrap"><button class="play">▶</button><small>Watch April's welcome · 2:14</small></div></section>
+      <section class="section"><div class="section-head"><h2>This week's challenge</h2><button class="text-button" data-page="challenges">View challenge →</button></div>
+        <div class="challenge card"><div class="challenge-icon">↗</div><div><h3>Make One New Option</h3><p>Take one small action that creates a future possibility.</p><div class="progress"><i style="width:60%"></i></div></div><div class="challenge-meta"><strong>3 / 5</strong>steps complete</div></div>
+      </section>
+      <section class="section"><div class="section-head"><h2>Featured training</h2><button class="text-button" data-page="learn">Browse all training →</button></div>
+        <div class="training-grid">${categories.slice(1,4).map((c,i)=>`<article class="training-card card"><div class="training-art ${["green","orange","gold"][i]}">${c[3]}</div><div class="body"><h3>${c[0]}: ${["Creating Choices Before You Need Them","Tell Your Story With Confidence","Build a Simple Content Rhythm"][i]}</h3><small>▶ ${[12,18,9][i]} min · ${c[2]}</small></div></article>`).join("")}</div>
+      </section>
+    </div><aside class="side-column">
+      <section class="event-card card"><div class="event-top"><span class="eyebrow">Up next · Tuesday</span><h2>Ask April: Live Q&A</h2><p>Bring your questions, ideas, and stuck points.</p></div><div class="event-details"><div class="detail-row"><span>□</span> June 16 · 12:00 PM MT</div><div class="detail-row"><span>♙</span> 24 members attending</div><button class="primary" data-page="events">Save my spot</button></div></section>
+      <section class="wins card"><div class="section-head"><h3>Member wins</h3><button class="text-button" data-page="community">See all</button></div><div class="win"><div class="avatar avatar-nina">NF</div><div><strong>Nina launched her first offer</strong><p>"I stopped waiting for perfect."</p><small>28 min ago · ♡ 18</small></div></div><div class="win"><div class="avatar avatar-jay">JW</div><div><strong>Jay booked a new client</strong><p>"The communication training worked."</p><small>Yesterday · ♡ 31</small></div></div></section>
+      <section class="joined card"><div><strong>12 new members</strong><small>joined this week</small></div><div class="member-stack"><div class="avatar avatar-sam">SL</div><div class="avatar avatar-jay">JW</div><div class="avatar avatar-nina">NF</div></div></section>
+    </aside></div>`;
+}
+
+function appsPage(){
+  return `<div class="page-head"><div><span class="eyebrow">Everything in one place</span><h1>My Apps</h1><p>Open your daily Own Your Options experience or enter the Coaching Hub.</p></div></div><div class="app-launch-grid"><article class="app-launch-card daily-app card"><span class="app-label">Daily experience</span><div class="app-launch-icon">OYO</div><h2>Own Your Options App</h2><p>Your daily focus, philosophy library, assessment, action plan, and story library.</p><button class="primary app-launch-button" data-app-link="daily">Open Own Your Options App</button></article><article class="app-launch-card coaching-app card"><span class="app-label">Coaching members</span><div class="app-launch-icon">COACH</div><h2>Coaching Hub</h2><p>Open your separate coaching app for calls, replays, worksheets, action plans, and accountability.</p><button class="primary app-launch-button" data-app-link="coaching">Open Coaching Hub</button></article></div>${accessRole==="Owner"?`<div class="app-owner-note card"><strong>April:</strong> Add or change these app links inside <button data-page="admin" data-open-app-links="true">April Admin → App Links</button>.</div>`:""}`;
+}
+
+function postCard(post, idx) {
+  const comments = post.comments || [];
+  return `<article class="post card" data-index="${idx}" data-post-id="${post.id||""}"><div class="post-head"><div class="avatar ${post.avatar}">${post.initials}</div><div><strong>${post.name}</strong><small>${post.time}</small></div><span class="space-tag">${post.space}</span></div><p>${escapeHtml(post.text)}</p>${post.image ? `<img class="post-image" src="${post.image}" alt="Shared by ${post.name}">`:""}<div class="post-actions"><button class="like-button">♡ <span>${post.likes || 0}</span> Like</button><button class="comment-toggle">▢ ${comments.length} Comment</button><button>↗ Share</button></div><div class="comments">${comments.map(c=>`<div class="comment"><div class="avatar avatar-sam">${c[0].split(" ").map(x=>x[0]).join("")}</div><div><strong>${c[0]}</strong><p>${escapeHtml(c[1])}</p></div></div>`).join("")}</div><form class="comment-form"><input required placeholder="Write a supportive comment..."><button>Send</button></form></article>`;
+}
+
+function communityPage() {
+  const member=currentMemberIdentity();
+  const all = [...userPosts, ...defaultPosts].filter(p => currentSpace === "All activity" || p.space === currentSpace);
+  return `<div class="page-head"><div><span class="eyebrow">The Own Your Options Collective</span><h1>Community</h1><p>Connect with people creating options, taking responsibility, and building freedom.</p></div></div>
+  <div class="page-layout"><aside class="spaces card"><h3>Spaces</h3>${spaces.map(s=>`<button class="space-button ${s===currentSpace?"active":""}" data-space="${s}">${s}</button>`).join("")}</aside>
+  <section class="feed"><div class="quick-post card"><div class="avatar avatar-ap">${member.initials}</div><button id="quickPost">Share a win, question, or idea...</button></div>${all.length ? all.map(postCard).join("") : `<div class="empty card">No posts here yet. Start the conversation.</div>`}</section>
+  <aside class="community-aside card"><div class="prompt-box card"><span>WEEKLY PROMPT</span><p>What is one thing you know now that you wish you knew a year ago?</p></div><h3 style="margin-top:18px">Online now</h3><div class="online-list">${[["April","A","avatar-april"],["Samantha Lee","SL","avatar-sam"],["Jay Williams","JW","avatar-jay"],["Nina Foster","NF","avatar-nina"]].map(x=>`<div class="online"><div class="avatar ${x[2]}">${x[1]}</div>${x[0]}<i></i></div>`).join("")}</div></aside></div>`;
+}
+
+function learnPage() {
+  return `<div class="page-head"><div><span class="eyebrow">The Own Your Options Framework</span><h1>Learn</h1><p>Practical skills for creating confidence, income, freedom, and fulfillment.</p></div><button class="primary">Continue learning</button></div><div class="framework-strip">${["Own your reality","Define your future","Create more options","Implement with intention","Build freedom"].map((x,i)=>`<div><b>${i+1}</b><span>${x}</span></div>`).join("")}</div><div class="category-grid">${categories.map(c=>`<article class="category-card card"><div class="symbol">${c[3]}</div><h3>${c[0]}</h3><p>${c[1]}</p><small>${c[2]} →</small></article>`).join("")}</div>`;
+}
+
+function startPage() {
+  return `<div class="page-head"><div><span class="eyebrow">A path made for you</span><h1>Start Here</h1><p>Answer one question and we'll point you toward the best place to begin.</p></div></div><section class="pathway card" id="quiz"><span class="eyebrow">Pathway quiz · 1 of 1</span><h1 style="margin-top:10px">What would make the biggest difference right now?</h1><p style="font-size:10px">There is no wrong answer. Pick the one that feels most useful today.</p><div class="quiz-options">${[["income","I need more income options"],["skills","I want stronger business skills"],["confidence","I'm looking for confidence"],["starting","I'm starting over"],["retirement","I'm getting near retirement"]].map(x=>`<button class="quiz-option" data-result="${x[0]}">${x[1]}</button>`).join("")}</div></section>`;
+}
+
+function eventsPage() {
+  const events = [["16","JUN","Ask April: Live Q&A","Tuesday · 12:00 PM MT · Weekly live training"],["24","JUN","Build Your Options Map","Wednesday · 6:00 PM MT · Monthly workshop"],["02","JUL","Guest Expert: Simple Sales","Thursday · 12:00 PM MT · Guest session"],["07","JUL","Community Co-working Hour","Tuesday · 10:00 AM MT · Accountability session"]];
+  return `<div class="page-head"><div><span class="eyebrow">Learn live, together</span><h1>Live Events</h1><p>Trainings, workshops, guest experts, and real-time support.</p></div><button class="primary">Add all to calendar</button></div><div class="event-list">${events.map(e=>`<article class="event-row card"><div class="date-box"><strong>${e[0]}</strong><small>${e[1]}</small></div><div><h3>${e[2]}</h3><p>${e[3]}</p></div><button class="primary rsvp">Save my spot</button></article>`).join("")}</div>`;
+}
+
+function coachingPage() {
+  return `<div class="page-head"><div><span class="eyebrow">Guidance + accountability</span><h1>Coaching Hub</h1><p>Deeper support for turning insight into meaningful action.</p></div><button class="primary app-launch-button" data-app-link="coaching">Open Coaching App</button></div><section class="locked-hero card"><div><span class="eyebrow">Own Your Options Coaching</span><h1 style="margin-top:9px">You don't do this alone.</h1><p>Join April and a focused group of members for coaching, accountability, practical plans, and honest momentum.</p><button class="primary app-launch-button" data-app-link="coaching">Enter the Coaching Hub</button></div><div class="coaching-portrait"></div></section><div class="benefits">${["Weekly group coaching calls","Replays + action plans","Accountability check-ins","Worksheets that create clarity","Monthly office hours","A focused coaching community"].map((x,i)=>`<article class="benefit card"><span class="eyebrow">0${i+1}</span><h3 style="margin-top:8px">${x}</h3><p>Practical support designed to help you keep moving.</p></article>`).join("")}</div>`;
+}
+
+function challengesPage() {
+  const items=[["7","7 Day Resourcefulness Challenge","Find new possibilities in what you already have."],["30","30 Day Options Challenge","Create meaningful choices for your future."],["#","Content Challenge","Build a simple, sustainable sharing rhythm."],["↑","Confidence Challenge","Build confidence through small brave actions."]];
+  return `<div class="page-head"><div><span class="eyebrow">Small actions, real momentum</span><h1>Challenges</h1><p>Choose a guided challenge and do it alongside the community.</p></div></div><div class="challenge-grid">${items.map((x,i)=>`<article class="challenge-card card"><div class="challenge-banner">${x[0]}</div><div class="body"><span class="eyebrow">${i===0?"Popular now":"Start anytime"}</span><h3 style="margin-top:7px">${x[1]}</h3><p>${x[2]}</p><button class="primary">Join challenge</button></div></article>`).join("")}</div>`;
+}
+
+function resourcesPage() {
+  const items=[["PDF","My Options Map","A one-page worksheet for seeing your possibilities."],["AI","Weekly Planning Prompt","Turn your priorities into a practical weekly plan."],["DOC","Simple Offer Builder","Shape your skills into a clear, useful offer."],["PDF","Confidence Checklist","A grounded reset before a brave action."],["LINK","Content Idea Bank","50 useful prompts for showing up online."],["PDF","Conversation Planner","Prepare for clear, confident conversations."]];
+  return `<div class="page-head"><div><span class="eyebrow">Tools you can use today</span><h1>Resource Vault</h1><p>Templates, prompts, PDFs, checklists, and trusted links.</p></div></div><div class="resource-filter">${["All resources","Templates","AI prompts","Checklists","Links"].map((x,i)=>`<button class="pill ${i===0?"active":""}">${x}</button>`).join("")}</div><div class="resource-grid">${items.map(x=>`<article class="resource-card card"><div class="file-type">${x[0]}</div><h3>${x[1]}</h3><p>${x[2]}</p><small>Open resource →</small></article>`).join("")}</div>`;
+}
+
+function membersPage() {
+  const people=managedMembers.filter(member=>member.visible && member.accessStatus==="Active");
+  return `<div class="page-head"><div><span class="eyebrow">Find your people</span><h1>Member Directory</h1><p>Connect through location, skills, business interests, and goals.</p></div><button class="primary">Edit my profile</button></div><div class="resource-filter">${["All members","Near me","Shared goals","Shared interests"].map((x,i)=>`<button class="pill ${i===0?"active":""}">${x}</button>`).join("")}</div><div class="members-grid">${people.map(member=>`<article class="member-card card"><div class="avatar ${member.avatar}">${initials(member.name)}</div><h3>${escapeHtml(member.name)}</h3><p>⌖ ${escapeHtml(member.location)}</p><p>${escapeHtml(member.bio||"Creating more options.")}</p><div class="tags">${member.interests.split(",").map(t=>`<span class="tag">${escapeHtml(t.trim())}</span>`).join("")}</div></article>`).join("")}</div>`;
+}
+
+const starterMembers=[
+  {id:1,name:"April Lungal",email:"april@ownyouroptions.com",location:"Alberta",interests:"Leadership, Business",goals:"Grow the Collective",bio:"Coach, mentor, and founder of Own Your Options.",status:"Active",visible:true,plan:"Owner",role:"Owner",progress:100,lastActive:"Today",avatar:"avatar-april"},
+  {id:2,name:"Nina Foster",email:"nina@example.com",location:"Ontario",interests:"New business, Confidence",goals:"Launch first offer",bio:"Creating a new income option.",status:"Active",visible:true,plan:"Collective",progress:68,lastActive:"Today",avatar:"avatar-nina"},
+  {id:3,name:"Jay Williams",email:"jay@example.com",location:"Colorado",interests:"Sales, Communication",goals:"Find three clients",bio:"Building a service business.",status:"Active",visible:true,plan:"Coaching",progress:82,lastActive:"Yesterday",avatar:"avatar-jay"},
+  {id:4,name:"Samantha Lee",email:"sam@example.com",location:"British Columbia",interests:"AI, Productivity",goals:"Create more time",bio:"Using better systems to build freedom.",status:"Active",visible:true,plan:"Collective",progress:54,lastActive:"Today",avatar:"avatar-sam"},
+  {id:5,name:"Morgan Reed",email:"morgan@example.com",location:"Texas",interests:"Content, Coaching",goals:"Grow an audience",bio:"Sharing useful ideas consistently.",status:"Active",visible:true,plan:"Collective",progress:36,lastActive:"3 days ago",avatar:"avatar-ap"},
+  {id:6,name:"Taylor Khan",email:"taylor@example.com",location:"Nova Scotia",interests:"Starting over, Leadership",goals:"Choose a new direction",bio:"Designing the next chapter.",status:"Paused",visible:false,plan:"Collective",progress:22,lastActive:"2 weeks ago",avatar:"avatar-nina"}
+];
+const starterContent=[
+  {id:101,title:"Responsibility Creates Options",area:"Learn",type:"Lesson",status:"Published",description:"See where your power lives and choose one useful action."},
+  {id:102,title:"My Options Map",area:"Resource Vault",type:"PDF",status:"Published",description:"A one-page worksheet for seeing your possibilities."},
+  {id:103,title:"Ask April: Live Q&A",area:"Live Events",type:"Live session",status:"Published",description:"Bring your questions, ideas, and stuck points."},
+  {id:104,title:"7 Day Resourcefulness Challenge",area:"Challenges",type:"Challenge",status:"Published",description:"Use what you already have to create momentum."},
+  {id:105,title:"Overcoming Overwhelm",area:"Coaching Hub",type:"Replay",status:"Draft",description:"Turn an overloaded mind into one clear decision."}
+];
+let managedMembers=readStored("oyo-hub-members",starterMembers);
+let managedContent=readStored("oyo-hub-content",starterContent);
+managedMembers.forEach(member=>member.completions??={});
+managedMembers.forEach(member=>member.role??="Member");
+managedMembers.forEach(member=>{member.accessStatus??=member.status==="Paused"?"Suspended":"Active";member.internalNotes??="";member.statusReason??="";member.archivedAt??="";});
+managedMembers.forEach(member=>{if(member.email==="april@ownyouroptions.com"||member.role==="Admin"){member.role="Owner";member.plan="Owner";}});
+let adminTab="overview";
+const saveMembers=()=>localStorage.setItem("oyo-hub-members",JSON.stringify(managedMembers));
+const saveContent=()=>localStorage.setItem("oyo-hub-content",JSON.stringify(managedContent));
+const initials=name=>name.split(/\s+/).map(part=>part[0]).join("").slice(0,2).toUpperCase();
+const sameId=(a,b)=>String(a)===String(b);
+let cloudReady=false;
+
+async function syncCloudData(){
+  if(!getSession()) return;
+  try {
+    const [content,profiles,memberships,roles,progress,posts,comments]=await Promise.all([fetchHubContent(),fetchProfiles(),fetchMemberships(),fetchStaffRoles(),fetchProgress(),fetchPosts(),fetchComments()]);
+    if(content?.length) managedContent=content.map(x=>({id:x.id,title:x.title,area:x.area,type:x.type,status:x.status,description:x.description||""}));
+    if(profiles?.length){
+      const membershipsById=new Map((memberships||[]).map(x=>[x.user_id,x])), rolesById=new Map((roles||[]).map(x=>[x.user_id,x])), progressById=new Map();
+      (progress||[]).forEach(x=>{const list=progressById.get(x.user_id)||[];list.push(x);progressById.set(x.user_id,list)});
+      managedMembers=profiles.map((profile,index)=>{const membership=membershipsById.get(profile.user_id)||{},records=progressById.get(profile.user_id)||[],completions={};records.forEach(x=>completions[x.content_id]=x.percent===100);return{id:profile.user_id,name:profile.display_name,email:membership.email||"",location:profile.province_state||"",interests:[...(profile.skills||[]),...(profile.business_interests||[])].join(", ")||"Creating options",goals:(profile.goals||[]).join(", ")||"Create more options",bio:profile.bio||"",status:membership.status||"Active",accessStatus:membership.status||"Active",visible:profile.directory_visible,plan:membership.plan||"Collective",role:accessRole==="Owner"&&profile.user_id===getSession().user.id?"Owner":rolesById.has(profile.user_id)?"Moderator":"Member",progress:records.length?Math.round(records.reduce((a,x)=>a+x.percent,0)/records.length):0,lastActive:membership.last_active_at?new Date(membership.last_active_at).toLocaleDateString():"Not yet",avatar:["avatar-ap","avatar-nina","avatar-jay","avatar-sam"][index%4],completions,internalNotes:membership.admin_notes||"",statusReason:membership.status_reason||"",archivedAt:membership.archived_at||""}});
+    }
+    if(posts){
+      userPosts=posts.map(post=>({id:post.id,userId:post.user_id,name:managedMembers.find(x=>sameId(x.id,post.user_id))?.name||"Member",initials:initials(managedMembers.find(x=>sameId(x.id,post.user_id))?.name||"Member"),avatar:"avatar-ap",space:post.space,time:new Date(post.created_at).toLocaleDateString(),text:post.body,image:"",likes:0,comments:(comments||[]).filter(x=>sameId(x.post_id,post.id)).map(x=>[managedMembers.find(m=>sameId(m.id,x.user_id))?.name||"Member",x.body,x.id])}));
+    }
+    saveMembers();saveContent();localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));cloudReady=true;
+  } catch(error) { console.warn("Cloud sync unavailable:",error.message); }
+}
+function adminPage(){
+  if(accessRole!=="Owner") return `<section class="pathway card"><span class="eyebrow">Private owner area</span><h1>April Admin is owner-only.</h1><p>This signed-in account does not have permission to access the private back office.</p><button class="primary" data-page="home">Return home</button></section>`;
+  return `<div class="owner-lock"><span>◆</span> Owner-only back office · Only April's authenticated account can open this area</div><div class="page-head"><div><span class="eyebrow">Private owner back office</span><h1>April Admin</h1><p>Manage the Collective, its members, and their progress.</p></div><button class="primary" id="exportMembers">Export members</button></div>
+  <div class="admin-tabs">${[["overview","Overview"],["app-links","App Links"],["content","Content"],["members","Members"],["progress","Progress"],["moderation","Community"],["roles","Team & Roles"],["housekeeping","Housekeeping"]].map(x=>`<button class="${adminTab===x[0]?"active":""}" data-admin-tab="${x[0]}">${x[1]}</button>`).join("")}</div><div id="adminPanel">${adminPanelMarkup()}</div>`;
+}
+function adminPanelMarkup(){
+  if(adminTab==="overview"){
+    const active=managedMembers.filter(x=>x.accessStatus==="Active").length, avg=Math.round(managedMembers.reduce((a,x)=>a+x.progress,0)/managedMembers.length);
+    return `<div class="admin-metrics">${[["Members",managedMembers.length,"Total member records"],["Active",active,"Able to access the hub"],["Average progress",avg+"%","Across all members"],["Published",managedContent.filter(x=>x.status==="Published").length,"Visible content items"]].map(x=>`<article class="metric-card card"><span class="eyebrow">${x[0]}</span><strong>${x[1]}</strong><p>${x[2]}</p></article>`).join("")}</div>
+    <div class="admin-two"><section class="admin-box card"><h2>What you can manage</h2><div class="admin-checklist">${["Add, edit, publish, draft, or remove content","Control which members appear in the directory","Review each member's completion and last activity","Activate, pause, or remove member accounts","Assign moderators with limited permissions","Moderate posts shared in the community"].map(x=>`<p>✓ ${x}</p>`).join("")}</div></section><section class="admin-box card"><span class="eyebrow">Needs attention</span><h2>Member follow-up</h2>${managedMembers.filter(x=>x.progress<50).map(x=>`<div class="attention-row"><div class="avatar ${x.avatar}">${initials(x.name)}</div><div><strong>${x.name}</strong><small>${x.progress}% complete · ${x.lastActive}</small></div></div>`).join("")}</section></div>`;
+  }
+  if(adminTab==="app-links") return `<div class="admin-two"><section class="admin-box card"><span class="eyebrow">Connected apps</span><h2>Add your app links</h2><p class="account-note">Paste the full website address for each app. These buttons will then open the correct app from the hub.</p><form class="admin-form" id="appLinksForm"><label>Own Your Options App link<input id="dailyAppLink" type="url" placeholder="https://..." value="${escapeHtml(appLinks.daily)}"></label><label>Coaching Hub app link<input id="coachingAppLink" type="url" placeholder="https://..." value="${escapeHtml(appLinks.coaching)}"></label><button class="primary">Save app links</button></form></section><section class="admin-box card"><span class="eyebrow">Member view</span><h2>What members will see</h2><div class="admin-checklist"><p>◆ Own Your Options App button</p><p>◆ Coaching Hub button</p><p>◆ A dedicated My Apps page</p><p>◆ Coaching app access from the Coaching Hub page</p></div></section></div>`;
+  if(adminTab==="content") return `<div class="admin-two"><section class="admin-box card"><span class="eyebrow">Content editor</span><h2>Add something new</h2><form class="admin-form" id="adminContentForm"><label>Title<input id="adminContentTitle" required placeholder="Example: Creating income options"></label><div class="field-pair"><label>Appears in<select id="adminContentArea">${["Learn","Live Events","Coaching Hub","Challenges","Resource Vault"].map(x=>`<option>${x}</option>`).join("")}</select></label><label>Type<select id="adminContentType">${["Lesson","Video","PDF","Template","Live session","Replay","Challenge"].map(x=>`<option>${x}</option>`).join("")}</select></label></div><label>Description<textarea id="adminContentDescription" required placeholder="What members will learn or receive"></textarea></label><label>Status<select id="adminContentStatus"><option>Published</option><option>Draft</option></select></label><button class="primary">Save content</button></form></section><section class="admin-box card"><span class="eyebrow">Content library</span><h2>${managedContent.length} items</h2><div class="admin-list">${managedContent.map(x=>`<article class="admin-list-item"><div><small>${x.area} · ${x.type} · <b class="${x.status==="Published"?"success":"draft"}">${x.status}</b></small><strong>${escapeHtml(x.title)}</strong><p>${escapeHtml(x.description)}</p></div><div class="item-buttons"><button data-content-toggle="${x.id}">${x.status==="Published"?"Unpublish":"Publish"}</button><button class="danger" data-content-delete="${x.id}">Remove</button></div></article>`).join("")}</div></section></div>`;
+  if(adminTab==="members") return `<div class="admin-two"><section class="admin-box card"><span class="eyebrow">Member onboarding</span><h2>How members join</h2><p class="account-note">New members choose <strong>Create a new member account</strong> from the sign-in screen. Their secure login, member record, and directory profile are created automatically.</p><div class="admin-checklist"><p>✓ Member confirms their email</p><p>✓ Database creates their profile</p><p>✓ You can then manage access and visibility</p><p>✓ Passwords remain private and secure</p></div><button class="primary wide" id="copyJoinLink">Copy member join link</button></section><section class="admin-box card"><span class="eyebrow">Active records</span><h2>${managedMembers.filter(x=>x.accessStatus!=="Archived").length} members</h2><div class="admin-list">${managedMembers.filter(x=>x.accessStatus!=="Archived").map(member=>memberAdminRow(member)).join("")}</div></section></div>`;
+  if(adminTab==="progress") {
+    const published=managedContent.filter(x=>x.status==="Published");
+    return `<section class="admin-box card"><div class="section-head"><div><span class="eyebrow">Member progress</span><h2>See how people are moving</h2></div><span class="status-note">Tracked against the things you publish</span></div><div class="progress-table"><div class="progress-row progress-head"><span>Member</span><span>Plan</span><span>Progress</span><span>Last active</span><span>Complete</span></div>${managedMembers.map(member=>`<div class="progress-row"><span><strong>${member.name}</strong><small>${member.goals}</small></span><span>${member.plan}</span><span><div class="progress"><i style="width:${member.progress}%"></i></div><small>${member.progress}% complete</small></span><span>${member.lastActive}</span><span>${Object.values(member.completions).filter(Boolean).length} of ${published.length}</span></div>`).join("")}</div></section>
+    <section class="admin-box card completion-section"><span class="eyebrow">Content-by-content tracking</span><h2>Completion details</h2><div class="completion-grid">${managedMembers.map(member=>`<article class="completion-member"><div class="member-admin-main"><div class="avatar ${member.avatar}">${initials(member.name)}</div><div><strong>${member.name}</strong><small>${member.progress}% overall</small></div></div><div>${published.map(item=>`<button class="${member.completions[item.id]?"done":""}" data-completion-member="${member.id}" data-completion-content="${item.id}"><span>${member.completions[item.id]?"✓":"○"}</span>${escapeHtml(item.title)}<small>${item.area}</small></button>`).join("")}</div></article>`).join("")}</div></section>`;
+  }
+  if(adminTab==="moderation") {
+    const memberComments=userPosts.flatMap((post,postIndex)=>(post.comments||[]).map((comment,commentIndex)=>({postIndex,commentIndex,author:comment[0],body:comment[1],post:post.text})));
+    return `<div class="moderator-banner card"><div><span class="eyebrow">Moderator workspace</span><h2>Community safety and support</h2><p>Moderators can review posts, remove inappropriate content, and help keep conversations organized. They cannot access private progress, change memberships, publish programs, or assign roles.</p></div><strong>${managedMembers.filter(x=>x.role==="Moderator"&&x.status==="Active").length}<small>active moderators</small></strong></div><div class="admin-two"><section class="admin-box card"><div class="section-head"><div><span class="eyebrow">Community moderation</span><h2>Member-created posts</h2></div><span class="status-note">${userPosts.length} posts</span></div><div class="admin-list">${userPosts.length?userPosts.map((post,i)=>`<article class="admin-list-item"><div><small>${post.space} · ${post.time}</small><strong>${post.name}</strong><p>${escapeHtml(post.text)}</p></div><button class="danger" data-post-delete="${i}">Remove post</button></article>`).join(""):`<div class="empty">No member-created posts need review.</div>`}</div></section><section class="admin-box card"><div class="section-head"><div><span class="eyebrow">Comment review</span><h2>Member comments</h2></div><span class="status-note">${memberComments.length} comments</span></div><div class="admin-list">${memberComments.length?memberComments.map(comment=>`<article class="admin-list-item"><div><small>On: ${escapeHtml(comment.post.slice(0,45))}</small><strong>${escapeHtml(comment.author)}</strong><p>${escapeHtml(comment.body)}</p></div><button class="danger" data-comment-post="${comment.postIndex}" data-comment-delete="${comment.commentIndex}">Remove</button></article>`).join(""):`<div class="empty">No member-created comments need review.</div>`}</div></section></div>`;
+  }
+  if(adminTab==="roles") return `<div class="roles-intro card"><div><span class="eyebrow">Team & permissions</span><h2>Add moderators when your community grows</h2><p>Choose trusted members to help manage conversations. They receive separate Moderator Tools and never receive access to April Admin.</p></div><div class="permission-legend"><span><b class="role-dot admin-dot"></b> Owner: April only</span><span><b class="role-dot mod-dot"></b> Moderator: Community only</span><span><b class="role-dot member-dot"></b> Member: No back-office access</span></div></div><section class="admin-box card"><div class="section-head"><div><span class="eyebrow">Role assignments</span><h2>Your team</h2></div><span class="status-note">Only April can change roles</span></div><div class="admin-list role-list">${managedMembers.filter(x=>x.accessStatus!=="Archived").map(member=>`<article class="admin-list-item"><div class="member-admin-main"><div class="avatar ${member.avatar}">${initials(member.name)}</div><div><small>${member.email}</small><strong>${member.name}</strong><p>${member.accessStatus} · ${member.plan}</p></div></div><div class="role-control"><span class="role-badge role-${member.role.toLowerCase()}">${member.role}</span>${member.role==="Owner"?`<small>Protected owner account</small>`:`<select data-member-role="${member.id}"><option ${member.role==="Member"?"selected":""}>Member</option><option ${member.role==="Moderator"?"selected":""}>Moderator</option></select>`}</div></article>`).join("")}</div></section><section class="permission-grid">${[["Owner","April Admin access","Only April can access content, members, progress, roles, settings, and moderation."],["Moderator","Separate Moderator Tools","Review and remove posts or comments. No access to April Admin."],["Member","Standard hub access","Join conversations, complete content, attend events, and appear in the directory."]].map((x,i)=>`<article class="card"><span class="role-badge role-${x[0].toLowerCase()}">${x[0]}</span><h3>${x[1]}</h3><p>${x[2]}</p></article>`).join("")}</section>`;
+  return housekeepingMarkup();
+}
+function memberAdminRow(member){return `<article class="admin-list-item"><div class="member-admin-main"><div class="avatar ${member.avatar}">${initials(member.name)}</div><div><small>${member.email} · ${member.location}</small><strong>${member.name}</strong><p>${member.plan} · <b class="access-${member.accessStatus.toLowerCase()}">${member.accessStatus}</b> · Directory: ${member.visible?"Visible":"Hidden"}</p></div></div><div class="item-buttons"><button data-member-visible="${member.id}">${member.visible?"Hide":"Show"}</button>${member.role==="Owner"?"":`<button class="${member.accessStatus==="Blocked"?"restore":""}" data-member-block="${member.id}">${member.accessStatus==="Blocked"?"Unblock":"Block access"}</button><button data-member-archive="${member.id}">Archive</button>`}</div></article>`}
+function housekeepingMarkup(){
+  const blocked=managedMembers.filter(x=>x.accessStatus==="Blocked"), archived=managedMembers.filter(x=>x.accessStatus==="Archived");
+  return `<div class="admin-metrics">${[["Blocked",blocked.length,"Cannot sign into the hub"],["Archived",archived.length,"Removed from active lists"],["Hidden",managedMembers.filter(x=>!x.visible).length,"Not shown in directory"],["Inactive",managedMembers.filter(x=>x.lastActive.includes("week")||x.lastActive==="Not yet").length,"May need follow-up"]].map(x=>`<article class="metric-card card"><span class="eyebrow">${x[0]}</span><strong>${x[1]}</strong><p>${x[2]}</p></article>`).join("")}</div><div class="housekeeping-note card"><span>!</span><p><strong>Block first, delete later.</strong> Blocking immediately prevents access while preserving history. Archive members you no longer need in active lists. Permanent deletion cannot be undone.</p></div><section class="admin-box card housekeeping-list"><span class="eyebrow">Member lifecycle</span><h2>Housekeeping controls</h2>${managedMembers.map(member=>`<article class="housekeeping-member"><div class="member-admin-main"><div class="avatar ${member.avatar}">${initials(member.name)}</div><div><strong>${member.name}</strong><small>${member.email} · ${member.accessStatus}${member.statusReason?` · ${escapeHtml(member.statusReason)}`:""}</small></div></div><label>Private owner notes<textarea data-notes="${member.id}" placeholder="Private notes only you can see">${escapeHtml(member.internalNotes)}</textarea></label><div class="item-buttons">${member.role==="Owner"?`<span class="role-badge role-owner">Protected owner</span>`:`${member.accessStatus==="Blocked"?`<button class="restore" data-member-block="${member.id}">Unblock access</button>`:`<button data-member-block="${member.id}">Block access</button>`}${member.accessStatus==="Archived"?`<button class="restore" data-member-restore="${member.id}">Restore</button><button class="danger" data-member-delete="${member.id}">Permanently delete</button>`:`<button data-member-archive="${member.id}">Archive</button>`}`}<button data-save-notes="${member.id}">Save notes</button></div></article>`).join("")}</section>`;
+}
+function moderatorPage(){
+  if(accessRole!=="Moderator"&&accessRole!=="Owner") return `<section class="pathway card"><span class="eyebrow">Restricted area</span><h1>Moderator access required.</h1><p>This signed-in account does not have moderation permissions.</p><button class="primary" data-page="home">Return home</button></section>`;
+  const comments=userPosts.flatMap((post,postIndex)=>(post.comments||[]).map((comment,commentIndex)=>({postIndex,commentIndex,author:comment[0],body:comment[1],post:post.text})));
+  return `<div class="page-head"><div><span class="eyebrow">Community-only access</span><h1>Moderator Tools</h1><p>Review community conversations without access to April Admin.</p></div></div><div class="moderator-banner card"><div><span class="eyebrow">Limited permissions</span><h2>Keep the Collective welcoming and useful</h2><p>This workspace contains community moderation only. Member records, private progress, content publishing, roles, and business settings remain owner-only.</p></div></div><div class="admin-two"><section class="admin-box card"><h2>Member posts</h2><div class="admin-list">${userPosts.length?userPosts.map((post,i)=>`<article class="admin-list-item"><div><small>${post.space}</small><strong>${post.name}</strong><p>${escapeHtml(post.text)}</p></div><button class="danger" data-post-delete="${i}">Remove</button></article>`).join(""):`<div class="empty">No member posts need review.</div>`}</div></section><section class="admin-box card"><h2>Member comments</h2><div class="admin-list">${comments.length?comments.map(comment=>`<article class="admin-list-item"><div><small>On: ${escapeHtml(comment.post.slice(0,45))}</small><strong>${escapeHtml(comment.author)}</strong><p>${escapeHtml(comment.body)}</p></div><button class="danger" data-comment-post="${comment.postIndex}" data-comment-delete="${comment.commentIndex}">Remove</button></article>`).join(""):`<div class="empty">No comments need review.</div>`}</div></section></div>`;
+}
+
+const pages = {home:homePage, apps:appsPage, community:communityPage, learn:learnPage, start:startPage, events:eventsPage, coaching:coachingPage, challenges:challengesPage, resources:resourcesPage, members:membersPage, moderator:moderatorPage, admin:adminPage};
+function render(page="home") {
+  document.body.classList.toggle("guest-view",accessRole==="Guest");
+  if(accessRole==="Guest"){
+    pageContent.innerHTML=`<section class="public-landing"><div class="landing-copy"><span class="eyebrow">Own Your Options Collective</span><h1>Create more options.<br><em>Live by choice.</em></h1><p>A supportive community, practical training, live coaching, challenges, and resources designed to help you build confidence, income, freedom, and fulfillment.</p><div class="landing-actions"><button class="primary" id="gatewaySignIn">Member sign in</button><button class="landing-secondary" id="gatewayJoin">Join the Collective</button></div><div class="landing-points"><span>Community support</span><span>Practical learning</span><span>Weekly momentum</span></div></div><div class="landing-panel card"><span class="eyebrow">Inside the Collective</span><h2>Your next option starts here.</h2><div class="landing-feature"><b>01</b><div><strong>Find your pathway</strong><small>Start with what matters most right now.</small></div></div><div class="landing-feature"><b>02</b><div><strong>Learn useful skills</strong><small>Build business, confidence, AI, and communication skills.</small></div></div><div class="landing-feature"><b>03</b><div><strong>Take action together</strong><small>Join challenges, live sessions, and community conversations.</small></div></div></div></section>`;
+    document.querySelectorAll("#gatewaySignIn,#gatewayJoin").forEach(button=>button.addEventListener("click",openAccount));
+    return;
+  }
+  if(accessRole==="Blocked"){
+    pageContent.innerHTML=`<section class="pathway card access-denied"><span class="eyebrow">Account unavailable</span><h1>Your access to the Own Your Options Collective is currently unavailable.</h1><p>Please contact April if you believe this is a mistake.</p></section>`;
+    return;
+  }
+  pageContent.innerHTML = pages[page]();
+  injectManagedContent(page);
+  document.querySelectorAll(".nav-item").forEach(x=>x.classList.toggle("active", x.dataset.page===page));
+  bindPageEvents(page);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function bindPageEvents(page) {
+  pageContent.querySelectorAll("[data-page]").forEach(x=>x.addEventListener("click", e=>{e.preventDefault();render(x.dataset.page);document.querySelector(".sidebar").classList.remove("open")}));
+  if(page==="community") {
+    document.querySelector("#quickPost")?.addEventListener("click",()=>composer.showModal());
+    document.querySelectorAll(".space-button").forEach(x=>x.addEventListener("click",()=>{currentSpace=x.dataset.space;render("community")}));
+    document.querySelectorAll(".like-button").forEach(x=>x.addEventListener("click",()=>{x.classList.toggle("liked");const n=x.querySelector("span");n.textContent=+n.textContent+(x.classList.contains("liked")?1:-1)}));
+    document.querySelectorAll(".comment-toggle").forEach(x=>x.addEventListener("click",()=>x.closest(".post").querySelector(".comment-form").classList.toggle("open")));
+    document.querySelectorAll(".comment-form").forEach(f=>f.addEventListener("submit",async e=>{e.preventDefault();const body=f.querySelector("input").value,postId=f.closest(".post").dataset.postId,p=document.querySelector("#commentTemplate").content.cloneNode(true);if(cloudReady&&postId&&getSession())try{const result=await createCloudComment({post_id:postId,user_id:getSession().user.id,body});const post=userPosts.find(x=>sameId(x.id,postId));post?.comments.push([getSession().user.user_metadata?.name||"Member",body,result?.[0]?.id])}catch(error){return showToast(error.message)}p.querySelector("p").textContent=body;f.previousElementSibling.append(p);f.reset();f.classList.remove("open")}));
+  }
+  if(page==="start") document.querySelectorAll(".quiz-option").forEach(x=>x.addEventListener("click",()=>showResult(x.dataset.result)));
+  if(page==="admin") bindAdminEvents();
+  if(page==="moderator") bindModeratorEvents();
+  document.querySelectorAll("[data-complete-content]").forEach(button=>button.addEventListener("click",async()=>{const contentId=button.dataset.completeContent,member=managedMembers.find(x=>sameId(x.id,getSession()?.user?.id));if(member){member.completions[contentId]=true;saveMembers()}if(cloudReady&&getSession())try{await upsertProgress({user_id:getSession().user.id,content_id:contentId,status:"Completed",percent:100,completed_at:new Date().toISOString(),updated_at:new Date().toISOString()});button.textContent="Completed ✓";button.classList.add("completed")}catch(e){showToast(e.message)}}));
+  document.querySelectorAll(".rsvp").forEach(x=>x.addEventListener("click",()=>{x.textContent="You're going ✓";x.style.background="#df7546"}));
+  document.querySelectorAll(".pill").forEach(x=>x.addEventListener("click",()=>{document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));x.classList.add("active")}));
+  document.querySelectorAll(".play").forEach(x=>x.addEventListener("click",()=>showToast("April's welcome video will open here.")));
+  document.querySelectorAll(".challenge-card .primary").forEach(x=>x.addEventListener("click",()=>{x.textContent="Challenge joined ✓";showToast("Challenge added to your plan")}));
+  document.querySelectorAll(".app-launch-button").forEach(button=>button.addEventListener("click",()=>openConnectedApp(button.dataset.appLink)));
+  document.querySelectorAll("[data-open-app-links]").forEach(button=>button.addEventListener("click",()=>{adminTab="app-links";render("admin")}));
+  document.querySelectorAll(".page-head>.primary:not(.app-launch-button),.locked-hero .primary:not(.app-launch-button)").forEach(x=>x.addEventListener("click",()=>showToast("This option is ready for April to connect.")));
+}
+function injectManagedContent(page){
+  const areas={learn:"Learn",events:"Live Events",coaching:"Coaching Hub",challenges:"Challenges",resources:"Resource Vault"};
+  const area=areas[page]; if(!area)return;
+  const items=managedContent.filter(x=>x.area===area&&x.status==="Published"); if(!items.length)return;
+  const member=managedMembers.find(x=>sameId(x.id,getSession()?.user?.id));
+  pageContent.insertAdjacentHTML("beforeend",`<section class="section managed-section"><div class="section-head"><div><span class="eyebrow">Added by April</span><h2>From your Own Your Options library</h2></div></div><div class="managed-grid">${items.map(x=>`<article class="resource-card card"><div class="file-type">${x.type.slice(0,4).toUpperCase()}</div><h3>${escapeHtml(x.title)}</h3><p>${escapeHtml(x.description)}</p><button class="complete-button ${member?.completions?.[x.id]?"completed":""}" data-complete-content="${x.id}">${member?.completions?.[x.id]?"Completed ✓":"Mark complete"}</button></article>`).join("")}</div></section>`);
+}
+function bindAdminEvents(){
+  document.querySelectorAll("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{adminTab=button.dataset.adminTab;render("admin")}));
+  document.querySelector("#exportMembers")?.addEventListener("click",exportMemberCsv);
+  document.querySelector("#copyJoinLink")?.addEventListener("click",async()=>{await navigator.clipboard.writeText(location.origin+location.pathname);showToast("Member join link copied")});
+  document.querySelector("#appLinksForm")?.addEventListener("submit",event=>{event.preventDefault();appLinks={daily:document.querySelector("#dailyAppLink").value.trim(),coaching:document.querySelector("#coachingAppLink").value.trim()};saveAppLinks();showToast("App links saved");render("apps")});
+  document.querySelector("#adminContentForm")?.addEventListener("submit",async event=>{event.preventDefault();const item={id:Date.now(),title:document.querySelector("#adminContentTitle").value.trim(),area:document.querySelector("#adminContentArea").value,type:document.querySelector("#adminContentType").value,status:document.querySelector("#adminContentStatus").value,description:document.querySelector("#adminContentDescription").value.trim()};managedContent.unshift(item);saveContent();if(cloudReady)try{await upsertHubContent(item)}catch(e){showToast(e.message)}render("admin")});
+  document.querySelectorAll("[data-content-toggle]").forEach(button=>button.addEventListener("click",async()=>{const item=managedContent.find(x=>sameId(x.id,button.dataset.contentToggle));item.status=item.status==="Published"?"Draft":"Published";saveContent();if(cloudReady)try{await upsertHubContent(item)}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelectorAll("[data-content-delete]").forEach(button=>button.addEventListener("click",async()=>{const id=button.dataset.contentDelete;managedContent=managedContent.filter(x=>!sameId(x.id,id));saveContent();if(cloudReady)try{await removeHubContent(id)}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelector("#adminMemberForm")?.addEventListener("submit",event=>{event.preventDefault();managedMembers.unshift({id:Date.now(),name:document.querySelector("#memberName").value.trim(),email:document.querySelector("#memberEmail").value.trim(),location:document.querySelector("#memberLocation").value.trim(),interests:document.querySelector("#memberInterests").value.trim()||"Creating options",goals:document.querySelector("#memberGoals").value.trim()||"Create more options",bio:"New Own Your Options member.",status:"Active",accessStatus:"Active",visible:document.querySelector("#memberVisible").checked,plan:document.querySelector("#memberPlan").value,role:"Member",progress:0,lastActive:"Not yet",avatar:"avatar-ap",completions:{},internalNotes:"",statusReason:"",archivedAt:""});saveMembers();render("admin")});
+  document.querySelectorAll("[data-member-visible]").forEach(button=>button.addEventListener("click",async()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.memberVisible));member.visible=!member.visible;saveMembers();if(cloudReady)try{await updateProfile(member.id,{directory_visible:member.visible})}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelectorAll("[data-member-block]").forEach(button=>button.addEventListener("click",async()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.memberBlock));const status=member.accessStatus==="Blocked"?"Active":"Blocked",reason=status==="Blocked"?(prompt("Private reason for blocking this member:")||"Blocked by owner"):"";member.accessStatus=status;member.statusReason=reason;if(status==="Blocked")member.visible=false;saveMembers();if(cloudReady)try{await setMemberAccess(member.id,status,reason)}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelectorAll("[data-member-archive]").forEach(button=>button.addEventListener("click",async()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.memberArchive));if(!confirm(`Archive ${member.name}? They will lose access and disappear from active lists.`))return;member.accessStatus="Archived";member.visible=false;member.archivedAt=new Date().toISOString();member.statusReason=member.statusReason||"Archived by owner";saveMembers();if(cloudReady)try{await setMemberAccess(member.id,"Archived",member.statusReason)}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelectorAll("[data-member-restore]").forEach(button=>button.addEventListener("click",async()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.memberRestore));member.accessStatus="Active";member.archivedAt="";member.statusReason="";saveMembers();if(cloudReady)try{await setMemberAccess(member.id,"Active","")}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelectorAll("[data-member-delete]").forEach(button=>button.addEventListener("click",async()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.memberDelete));if(member?.accessStatus!=="Archived"||!confirm(`Permanently delete ${member.name}? This cannot be undone.`))return;if(cloudReady)try{await permanentlyDeleteMember(member.id)}catch(e){return showToast(e.message)}managedMembers=managedMembers.filter(x=>!sameId(x.id,member.id));saveMembers();render("admin")}));
+  document.querySelectorAll("[data-save-notes]").forEach(button=>button.addEventListener("click",async()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.saveNotes));member.internalNotes=document.querySelector(`[data-notes="${member.id}"]`).value.trim();saveMembers();if(cloudReady)try{await updateMembership(member.id,{admin_notes:member.internalNotes})}catch(e){showToast(e.message)}render("admin")}));
+  document.querySelectorAll("[data-completion-member]").forEach(button=>button.addEventListener("click",()=>{const member=managedMembers.find(x=>sameId(x.id,button.dataset.completionMember));const contentId=button.dataset.completionContent;member.completions[contentId]=!member.completions[contentId];const published=managedContent.filter(x=>x.status==="Published");member.progress=published.length?Math.round(published.filter(x=>member.completions[x.id]).length/published.length*100):0;member.lastActive="Updated now";saveMembers();render("admin")}));
+  document.querySelectorAll("[data-post-delete]").forEach(button=>button.addEventListener("click",async()=>{const post=userPosts[Number(button.dataset.postDelete)];if(cloudReady&&post.id)try{await removeCloudPost(post.id)}catch(e){return showToast(e.message)}userPosts.splice(Number(button.dataset.postDelete),1);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));render("admin")}));
+  document.querySelectorAll("[data-comment-delete]").forEach(button=>button.addEventListener("click",async()=>{const comment=userPosts[Number(button.dataset.commentPost)].comments[Number(button.dataset.commentDelete)];if(cloudReady&&comment[2])try{await removeCloudComment(comment[2])}catch(e){return showToast(e.message)}userPosts[Number(button.dataset.commentPost)].comments.splice(Number(button.dataset.commentDelete),1);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));render("admin")}));
+  document.querySelectorAll("[data-member-role]").forEach(select=>select.addEventListener("change",async()=>{const member=managedMembers.find(x=>sameId(x.id,select.dataset.memberRole));member.role=select.value;saveMembers();if(cloudReady)try{await assignModerator(member.id,member.role==="Moderator")}catch(e){showToast(e.message)}render("admin")}));
+}
+function bindModeratorEvents(){
+  document.querySelectorAll("[data-post-delete]").forEach(button=>button.addEventListener("click",async()=>{const post=userPosts[Number(button.dataset.postDelete)];if(cloudReady&&post.id)try{await removeCloudPost(post.id)}catch(e){return showToast(e.message)}userPosts.splice(Number(button.dataset.postDelete),1);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));render("moderator")}));
+  document.querySelectorAll("[data-comment-delete]").forEach(button=>button.addEventListener("click",async()=>{const comment=userPosts[Number(button.dataset.commentPost)].comments[Number(button.dataset.commentDelete)];if(cloudReady&&comment[2])try{await removeCloudComment(comment[2])}catch(e){return showToast(e.message)}userPosts[Number(button.dataset.commentPost)].comments.splice(Number(button.dataset.commentDelete),1);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));render("moderator")}));
+}
+function exportMemberCsv(){
+  const quote=value=>`"${String(value??"").replaceAll('"','""')}"`;
+  const rows=[["Name","Email","Location","Interests","Goal","Plan","Role","Status","Directory visible","Progress","Last active"],...managedMembers.map(x=>[x.name,x.email,x.location,x.interests,x.goals,x.plan,x.role,x.status,x.visible,x.progress,x.lastActive])];
+  const blob=new Blob([rows.map(row=>row.map(quote).join(",")).join("\n")],{type:"text/csv"});
+  const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="own-your-options-members.csv";link.click();URL.revokeObjectURL(link.href);
+}
+function showResult(type) {
+  const results={income:["Creating More Income Options","Start with the Creating Options Framework, then join the income options conversation."],skills:["Business Skills","Build a practical foundation with short lessons and useful templates."],confidence:["Confidence Challenge","Small brave actions will help you build confidence from real evidence."],starting:["Start Again Pathway","Begin with clarity, resourcefulness, and a welcoming group who gets it."],retirement:["Your Next Chapter Pathway","Map your skills, interests, and possibilities for what comes next."]};
+  document.querySelector("#quiz").innerHTML=`<span class="eyebrow">Your recommended pathway</span><div class="quiz-result"><h1>${results[type][0]}</h1><p>${results[type][1]}</p><button class="primary" data-page="${type==="confidence"?"challenges":"learn"}">Begin my pathway →</button></div><button class="text-button" style="margin-top:18px" data-page="start">Retake quiz</button>`;
+  bindPageEvents("start");
+}
+function openConnectedApp(type){
+  const url=appLinks[type];
+  if(!url){showToast(accessRole==="Owner"?"Add this link in April Admin → App Links.":"This app link is coming soon.");return}
+  window.open(url,"_blank","noopener");
+}
+function escapeHtml(text) { const d=document.createElement("div"); d.textContent=text; return d.innerHTML; }
+function showToast(message){const toast=document.querySelector("#toast");toast.textContent=message;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2600)}
+const accountDialog=document.querySelector("#accountDialog"),accountContent=document.querySelector("#accountContent");
+function openAccount(){
+  const session=getSession();
+  document.querySelector("#accountTitle").textContent=session?"Your member account":"Member sign in";
+  accountContent.innerHTML=session?`<p class="account-note">Signed in securely as <strong>${escapeHtml(session.user.email)}</strong>.</p><p class="account-success">${accessRole==="Owner"?"Owner access active":accessRole==="Moderator"?"Moderator access active":"Member access active"}</p><button class="primary wide" id="signOutButton">Sign out</button>`:`<form class="admin-form" id="signInForm"><label>Your name<input id="authName" autocomplete="name" placeholder="Needed only for a new account"></label><label>Email<input id="authEmail" type="email" autocomplete="email" required></label><label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required></label><div id="authMessage"></div><button class="primary">Sign in</button><button class="text-button" id="createAccount" type="button">Create a new member account</button></form>`;
+  accountDialog.showModal();
+  document.querySelector("#signOutButton")?.addEventListener("click",()=>{signOut();location.reload()});
+  document.querySelector("#signInForm")?.addEventListener("submit",async event=>{event.preventDefault();try{await signIn(document.querySelector("#authEmail").value,document.querySelector("#authPassword").value);location.reload()}catch(e){document.querySelector("#authMessage").textContent=e.message}});
+  document.querySelector("#createAccount")?.addEventListener("click",async()=>{try{const name=document.querySelector("#authName").value.trim();if(!name)throw new Error("Enter your name first.");await signUp(document.querySelector("#authEmail").value,document.querySelector("#authPassword").value,name);document.querySelector("#authMessage").textContent="Account created. Check your email, confirm it, then sign in."}catch(e){document.querySelector("#authMessage").textContent=e.message}});
+}
+function updateIdentityUI(){
+  const identity=currentMemberIdentity(), session=getSession();
+  const setText=(selector,text)=>{const element=document.querySelector(selector);if(element)element.textContent=text};
+  setText("#accountButton",session?identity.initials:"Sign in");
+  setText("#sidebarAvatar",session?identity.initials:"YO");
+  setText("#sidebarMemberName",session?identity.name:"Your account");
+  setText("#sidebarMemberRole",session?identity.role:"Own Your Options member");
+  setText("#commentTemplate .avatar",identity.initials);
+  setText("#commentTemplate strong",identity.name);
+  const adminNav=document.querySelector(".admin-nav"), moderatorNav=document.querySelector(".moderator-nav");
+  if(adminNav)adminNav.hidden=accessRole!=="Owner";
+  if(moderatorNav)moderatorNav.hidden=accessRole!=="Moderator";
+}
+updateIdentityUI();
+document.querySelector("#accountButton")?.addEventListener("click",openAccount);
+document.querySelector("#closeAccount")?.addEventListener("click",()=>accountDialog?.close());
+document.querySelector("#openComposer")?.addEventListener("click",()=>{if(!getSession()&&location.protocol!=="file:")return openAccount();composer?.showModal()});
+document.querySelector(".mobile-menu")?.addEventListener("click",()=>document.querySelector(".sidebar")?.classList.toggle("open"));
+document.querySelector(".sidebar")?.addEventListener("click",event=>{const button=event.target.closest("[data-page]");if(!button)return;event.preventDefault();render(button.dataset.page);document.querySelector(".sidebar")?.classList.remove("open")});
+document.querySelector("#postImage")?.addEventListener("change", e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader();r.onload=()=>{const preview=document.querySelector("#imagePreview");if(preview)preview.innerHTML=`<img src="${r.result}" alt="Preview">`};r.readAsDataURL(f)});
+document.querySelector("#postForm")?.addEventListener("submit",async e=>{e.preventDefault();const img=document.querySelector("#imagePreview img"),member=currentMemberIdentity(),post={name:member.name,initials:member.initials,avatar:"avatar-ap",space:document.querySelector("#postSpace").value,time:"Just now",text:document.querySelector("#postText").value,image:img?.src||"",likes:0,comments:[]};if(cloudReady&&getSession())try{const result=await createPost({user_id:getSession().user.id,space:post.space,body:post.text});post.id=result?.[0]?.id}catch(error){return showToast(error.message)}userPosts.unshift(post);localStorage.setItem("oyo-community-posts",JSON.stringify(userPosts));e.target.reset();const preview=document.querySelector("#imagePreview");if(preview)preview.innerHTML="";composer?.close();currentSpace="All activity";render("community")});
+render();
+
+async function initializeCloud(){
+  if(location.protocol==="file:"||!getSession())return;
+  try{
+    accessRole=await getHubAccessRole();
+    updateIdentityUI();
+    render();
+    await syncCloudData();
+    updateIdentityUI();
+    render();
+  }catch(error){
+    console.error("Own Your Options cloud connection:",error);
+    showToast("The hub is available. Online updates will reconnect shortly.");
+  }
+}
+initializeCloud();
+})();
+
+</script>
 </body>
 </html>
